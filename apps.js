@@ -294,6 +294,14 @@ const APPS = {
           '</div>' +
           '<div style="color:#555;font-size:16px;margin-left:auto">&#x203A;</div>' +
         '</div>' +
+        '<div onclick="WindowManager.open(\'biology-eye-dissection\',\'Biology \u2014 Eye Dissection\')" style="display:flex;align-items:center;gap:14px;padding:16px;background:#111827;border-radius:8px;cursor:default;border:1px solid #1e2a3a;transition:background .2s" onmouseover="this.style.background=\'#1a2340\'" onmouseout="this.style.background=\'#111827\'">' +
+          '<div style="flex-shrink:0">' + iconSVG('dna', 48) + '</div>' +
+          '<div style="min-width:0">' +
+            '<div style="color:#fff;font-size:14px;font-weight:600">Eye Dissection</div>' +
+            '<div style="color:#888;font-size:11px;margin-top:3px">KS3 Science \u2014 Sensory Organs Practical Investigation</div>' +
+          '</div>' +
+          '<div style="color:#555;font-size:16px;margin-left:auto">&#x203A;</div>' +
+        '</div>' +
       '</div>';
     }
   },
@@ -705,6 +713,83 @@ const APPS = {
     }
   },
 
+  'biology-eye-dissection': {
+    title: 'Eye Dissection',
+    icon: 'dna',
+    content: function() {
+      var topPhotos = ['processed_IMG_5447.jpg','processed_IMG_5456.jpg','processed_IMG_5464.jpg'];
+      var bottomPhotos = ['processed_IMG_5478.jpg','processed_IMG_5479.jpg'];
+      function tile(p) { return '<div style="cursor:pointer;border-radius:4px;overflow:hidden;background:#2a2a3e;border:1px solid #444" onclick="window._showLightbox(\'media/biology/eye-dissection/'+p+'\')"><img src="media/biology/eye-dissection/'+p+'" style="width:100%;display:block;object-fit:cover;aspect-ratio:4/3" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></div>'; }
+      return '<div style="color:#ccc;line-height:1.8;max-width:960px">'+
+        '<h2 style="color:#66bb6a;font-size:20px;margin-bottom:4px">Eye Dissection</h2>'+
+        '<p style="color:#888;font-size:13px;margin-bottom:8px">KS3 Science \u2014 Sensory Organs Practical Investigation</p>'+
+        '<p style="font-size:11px;color:#555;margin-bottom:8px">Click any image to enlarge</p>'+
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:16px">'+topPhotos.map(tile).join('')+'</div>'+
+
+        '<div style="padding:10px 12px;background:#1a3a1a;border-radius:6px;border:1px solid #2e7d32;margin-bottom:14px">'+
+          '<b style="color:#66bb6a;font-size:13px">Curriculum Links</b>'+
+          '<p style="font-size:12px;color:#a5d6a7;margin-top:4px">KS3 Science \u2014 Working Scientifically; Biology: Structure and Function of Living Organisms, Sensory Organs and the Nervous System. This dissection helps students visualise how the eye works as a sensory organ, exploring the relationship between its anatomical structures and the physics of light \u2014 a powerful cross-curricular link between Biology and Physics.</p>'+
+        '</div>'+
+
+        '<h3 style="color:#ffd700;font-size:15px;margin-bottom:6px">About This Practical</h3>'+
+        '<p style="font-size:13px;margin-bottom:10px">The eye dissection is one of the most fascinating practicals in my KS3 curriculum. Using sheep or cow eyes, students explore the structure and function of a complex sensory organ firsthand. Unlike diagrams, the dissection reveals the tough sclera, the gel-like vitreous humour, the delicate lens, and the iridescent tapetum lucidum \u2014 the reflective layer that makes animal eyes glow in the dark. It is a practical that consistently transforms abstract textbook descriptions into tangible, unforgettable learning.</p>'+
+
+        '<h3 style="color:#ffd700;font-size:15px;margin-bottom:8px">Learning Objectives</h3>'+
+        '<ul style="list-style:disc;padding-left:20px;margin-bottom:12px;font-size:13px">'+
+          '<li>Identify the major structures of the eye: cornea, iris, pupil, lens, retina, sclera, choroid, and optic nerve</li>'+
+          '<li>Understand how the cornea and lens work together to focus light onto the retina</li>'+
+          '<li>Observe the vitreous humour and discuss its role in maintaining the eye\u2019s shape</li>'+
+          '<li>Compare the anatomy of a sheep or cow eye with the human eye</li>'+
+          '<li>Use dissection tools safely and record observations through scientific drawings and notes</li>'+
+        '</ul>'+
+
+        '<h3 style="color:#ffd700;font-size:15px;margin-bottom:8px">Step-by-Step Process</h3>'+
+
+        '<div style="margin-bottom:10px">'+
+          '<b style="color:#66bb6a;font-size:13px">1. External Observation</b>'+
+          '<p style="font-size:13px;color:#aaa;margin-top:2px">Students begin by examining the intact eye. They identify the tough, white sclera, the transparent cornea at the front, and the optic nerve stump at the back. Extrinsic muscles and fatty tissue often remain attached, prompting discussion about how the eye moves within the socket. Students are asked to gently squeeze the eye to feel its firmness \u2014 the vitreous humour inside maintains this shape.</p>'+
+        '</div>'+
+
+        '<div style="margin-bottom:10px">'+
+          '<b style="color:#66bb6a;font-size:13px">2. Removing the Cornea</b>'+
+          '<p style="font-size:13px;color:#aaa;margin-top:2px">Using a scalpel, students make a careful incision around the edge of the cornea where it meets the sclera. As they lift the cornea away, aqueous humour \u2014 a clear, watery fluid \u2014 often leaks out. Students note how the cornea is transparent yet tough, designed to protect the eye while allowing light to enter.</p>'+
+        '</div>'+
+
+        '<div style="margin-bottom:10px">'+
+          '<b style="color:#66bb6a;font-size:13px">3. Extracting the Iris and Lens</b>'+
+          '<p style="font-size:13px;color:#aaa;margin-top:2px">Behind the cornea, students find the coloured iris and the dark pupil. Using forceps, they gently lift out the lens \u2014 a small, hard, glass-like sphere. Holding it up to text on a page reveals its magnifying properties, a direct demonstration of how the lens focuses light. Students often remark on how small and dense it is compared to their expectation from diagrams.</p>'+
+        '</div>'+
+
+        '<div style="margin-bottom:10px">'+
+          '<b style="color:#66bb6a;font-size:13px">4. Exploring the Vitreous Humour</b>'+
+          '<p style="font-size:13px;color:#aaa;margin-top:2px">Scooping out the vitreous humour \u2014 a clear, jelly-like substance that fills the rear chamber \u2014 is always a highlight. Students feel its consistency and discuss its dual role: maintaining the spherical shape of the eye and keeping the retina pressed smoothly against the choroid for sharp image formation.</p>'+
+        '</div>'+
+
+        '<div style="margin-bottom:10px">'+
+          '<b style="color:#66bb6a;font-size:13px">5. Examining the Retina and Tapetum Lucidum</b>'+
+          '<p style="font-size:13px;color:#aaa;margin-top:2px">After emptying the vitreous chamber, students see the retina \u2014 a thin, greyish membrane \u2014 and beneath it, the iridescent blue-green tapetum lucidum. This reflective layer, present in many animals but not humans, helps nocturnal animals see in low light by bouncing light back through the retina. Students connect this to adaptation and evolution, and compare it to the red-eye effect in flash photography.</p>'+
+        '</div>'+
+
+        '<div style="margin-bottom:16px">'+
+          '<b style="color:#66bb6a;font-size:13px">6. Tracing the Optic Nerve</b>'+
+          '<p style="font-size:13px;color:#aaa;margin-top:2px">Finally, students locate the optic nerve at the rear of the eye and trace its path. This leads to a discussion of how visual information travels from the retina to the brain, linking the eye dissection to the broader nervous system topic and reinforcing the integration of sensory organs into the body\u2019s overall physiology.</p>'+
+        '</div>'+
+
+        '<div style="padding:10px 12px;background:#2a2a3e;border-radius:6px;margin-top:8px;margin-bottom:16px">'+
+          '<b style="color:#ffd700;font-size:12px">Assessment</b>'+
+          '<p style="font-size:12px;color:#aaa;margin-top:4px">Students are assessed on safe dissection technique, the accuracy of their labelled biological drawings, and a written reflection answering: <i>"How does the structure of the eye enable it to detect light and form images?"</i> This task links the practical to both the KS3 Biology curriculum and the Physics topic of light and optics, encouraging cross-curricular scientific thinking.</p>'+
+        '</div>'+
+
+        '<h3 style="color:#ffd700;font-size:15px;margin-bottom:8px">Videos</h3>'+
+        '<div style="margin-bottom:10px;background:#2a2a3e;border-radius:6px;padding:10px"><b style="color:#66bb6a;font-size:13px">Dissection Procedure</b><video controls style="width:100%;max-height:360px;border-radius:4px;margin-top:6px" preload="none"><source src="media/biology/eye-dissection/eye-dissection-1.mp4" type="video/mp4">Your browser does not support video playback.</video></div>'+
+        '<div style="margin-bottom:16px;background:#2a2a3e;border-radius:6px;padding:10px"><b style="color:#66bb6a;font-size:13px">Close-Up Examination</b><video controls style="width:100%;max-height:360px;border-radius:4px;margin-top:6px" preload="none"><source src="media/biology/eye-dissection/eye-dissection-2.mp4" type="video/mp4">Your browser does not support video playback.</video></div>'+
+
+        '<h3 style="color:#ffd700;font-size:15px;margin-bottom:8px">More Photos</h3>'+
+        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:8px">'+bottomPhotos.map(tile).join('')+'</div>'+
+      '</div>';
+    }
+  },
+
   physics: {
     title: 'Physics',
     icon: 'atom',
@@ -1036,6 +1121,115 @@ const APPS = {
         '<p style="color:#888;font-size:12px;margin-bottom:12px">Click a cursor below to change it across the entire desktop.</p>' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px">' + grid + '</div>' +
         '<p id="cursor-label" style="color:#00f0ff;font-size:12px;margin-top:10px;text-align:center">Current: Default</p>' +
+      '</div>';
+    }
+  },
+
+  'extra-curricular': {
+    title: 'Extra-curricular',
+    icon: 'rocket',
+    content: function() {
+      return '<div style="color:#ccc">' +
+        '<h2 style="color:#ef5350;font-size:18px;margin-bottom:14px">Extra-curricular Activities</h2>' +
+        '<div onclick="WindowManager.open(\'extra-curricular-stem\',\'Extra-curricular \u2014 STEM Club\')" style="display:flex;align-items:center;gap:14px;padding:16px;background:#111827;border-radius:8px;cursor:default;border:1px solid #1e2a3a;transition:background .2s;margin-bottom:10px" onmouseover="this.style.background=\'#1a2340\'" onmouseout="this.style.background=\'#111827\'">' +
+          '<div style="flex-shrink:0">' + iconSVG('rocket', 48) + '</div>' +
+          '<div style="min-width:0">' +
+            '<div style="color:#fff;font-size:14px;font-weight:600">STEM Club</div>' +
+            '<div style="color:#888;font-size:11px;margin-top:3px">Competition Projects \u2014 Autonomous Boats, AI Detection & Game Dev</div>' +
+          '</div>' +
+          '<div style="color:#555;font-size:16px;margin-left:auto">\u203A</div>' +
+        '</div>' +
+        '<div onclick="WindowManager.open(\'extra-curricular-volunteering\',\'Extra-curricular \u2014 Volunteering Club\')" style="display:flex;align-items:center;gap:14px;padding:16px;background:#111827;border-radius:8px;cursor:default;border:1px solid #1e2a3a;transition:background .2s" onmouseover="this.style.background=\'#1a2340\'" onmouseout="this.style.background=\'#111827\'">' +
+          '<div style="flex-shrink:0">' + iconSVG('rocket', 48) + '</div>' +
+          '<div style="min-width:0">' +
+            '<div style="color:#fff;font-size:14px;font-weight:600">Volunteering Club</div>' +
+            '<div style="color:#888;font-size:11px;margin-top:3px">CYLF Halloween Workshop & Community STEM Outreach</div>' +
+          '</div>' +
+          '<div style="color:#555;font-size:16px;margin-left:auto">\u203A</div>' +
+        '</div>' +
+      '</div>';
+    }
+  },
+
+  'extra-curricular-stem': {
+    title: 'STEM Club',
+    icon: 'rocket',
+    content: function() {
+      return '<div style="color:#ccc;line-height:1.8;max-width:960px">'+
+        '<h2 style="color:#00f0ff;font-size:20px;margin-bottom:4px">STEM Club</h2>'+
+        '<p style="color:#888;font-size:13px;margin-bottom:8px">2023 \u2014 Present | Competition Projects & Engineering Mentoring</p>'+
+        '<p style="font-size:11px;color:#555;margin-bottom:8px">Click any image to enlarge</p>'+
+
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:16px">'+
+          (function(files){ return files.map(function(f){ return '<div style="cursor:pointer;border-radius:4px;overflow:hidden;background:#2a2a3e;border:1px solid #444" onclick="window._showLightbox(\'media/extra-curricular/stem-club/'+f+'\')"><img src="media/extra-curricular/stem-club/'+f+'" style="width:100%;display:block;object-fit:cover;aspect-ratio:4/3" loading="lazy"></div>'; }).join(''); })(['processed_IMG_7901.jpg','processed_IMG_7901 2.jpg','processed_IMG_7902.jpg','processed_IMG_7902 2.jpg','processed_IMG_8216.jpg'])+
+        '</div>'+
+
+        '<p style="font-size:13px;margin-bottom:10px">The STEM Club is where students move beyond the curriculum and into genuine engineering. I mentor teams through the full project lifecycle \u2014 from initial concept and prototyping through to competition-ready builds \u2014 preparing them for local and international STEM competitions.</p>'+
+
+        '<div style="margin-bottom:10px">'+
+          '<b style="color:#ffd700;font-size:14px">Autonomous Self-Driving Boats</b>'+
+          '<p style="font-size:13px;color:#aaa;margin-top:3px">Students designed, built, and programmed autonomous model boats capable of navigating obstacle courses without human input. Using Arduino microcontrollers, ultrasonic sensors, and GPS modules, they tackled real-world challenges in sensor integration, pathfinding algorithms, and waterproof hardware design. This project placed in the finals of a regional engineering competition.</p>'+
+        '</div>'+
+
+        '<div style="margin-bottom:10px">'+
+          '<b style="color:#ffd700;font-size:14px">AI Detection Software</b>'+
+          '<p style="font-size:13px;color:#aaa;margin-top:3px">A team developed computer vision software using machine learning to detect and classify objects in real time. They trained models on custom datasets, integrated the solution into a working application, and earned a Top 10 finish in the CS category at the HKAGE Young SEAM Award. The project gave them practical exposure to Python, TensorFlow, and the ethical considerations of AI.</p>'+
+        '</div>'+
+
+        '<div style="margin-bottom:10px">'+
+          '<b style="color:#ffd700;font-size:14px">Game Development</b>'+
+          '<p style="font-size:13px;color:#aaa;margin-top:3px">Students created 2D platformers in Scratch and Godot, and more advanced projects in Unity. They learn game design principles, sprite animation, and event-driven programming while building portfolio pieces. Several games were showcased at the school\u2019s open day, drawing queues of younger students eager to play.</p>'+
+        '</div>'+
+
+        '<div style="padding:8px 10px;background:#1a2330;border-radius:4px;margin-bottom:14px">'+
+          '<b style="color:#ffd700;font-size:12px">Competition Results</b>'+
+          '<ul style="list-style:disc;padding-left:18px;font-size:12px;color:#ccc;margin:6px 0 0 0">'+
+            '<li>Grand Prize \u2014 PolyU Design Hatch Competition</li>'+
+            '<li>Top 10 (CS Section) \u2014 HKAGE Young SEAM Award</li>'+
+            '<li>Regional finals \u2014 Autonomous Boat Challenge</li>'+
+            '<li>Multiple teams advancing to national-level STEM competitions</li>'+
+          '</ul>'+
+        '</div>'+
+
+        '<h3 style="color:#ffd700;font-size:14px;margin-bottom:8px">Project Video</h3>'+
+        '<div style="background:#2a2a3e;border-radius:6px;padding:10px"><b style="color:#00f0ff;font-size:12px">Build & Assembly</b><video controls style="width:100%;max-height:340px;border-radius:4px;margin-top:6px" preload="none"><source src="media/extra-curricular/stem-club/stem-project-2.mp4" type="video/mp4"></video></div>'+
+      '</div>';
+    }
+  },
+
+  'extra-curricular-volunteering': {
+    title: 'Volunteering Club',
+    icon: 'rocket',
+    content: function() {
+      return '<div style="color:#ccc;line-height:1.8;max-width:960px">'+
+        '<h2 style="color:#ff00aa;font-size:20px;margin-bottom:4px">Volunteering Club</h2>'+
+        '<p style="color:#888;font-size:13px;margin-bottom:8px">2025 \u2014 Present | STEM Outreach & Community Service</p>'+
+        '<p style="font-size:11px;color:#555;margin-bottom:8px">Click any image to enlarge</p>'+
+
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:16px">'+
+          (function(files){ return files.map(function(f){ return '<div style="cursor:pointer;border-radius:4px;overflow:hidden;background:#2a2a3e;border:1px solid #444" onclick="window._showLightbox(\'media/extra-curricular/cylf/'+f+'\')"><img src="media/extra-curricular/cylf/'+f+'" style="width:100%;display:block;object-fit:cover;aspect-ratio:4/3" loading="lazy"></div>'; }).join(''); })(['processed_IMG_7758.jpg','processed_IMG_7761.jpg','processed_IMG_7764.jpg','processed_IMG_7769.jpg','processed_IMG_7771.jpg'])+
+        '</div>'+
+
+        '<p style="font-size:13px;margin-bottom:10px">I organise student-led volunteering events focused on STEM outreach and community service. The club empowers students to use their knowledge and skills to make a positive impact beyond the school gates.</p>'+
+
+        '<div style="padding:8px 10px;background:#1a2330;border-radius:4px;margin-bottom:14px">'+
+          '<b style="color:#ffd700;font-size:12px">Key Initiatives</b>'+
+          '<ul style="list-style:disc;padding-left:18px;font-size:12px;color:#ccc;margin:6px 0 0 0">'+
+            '<li>STEM workshops for underprivileged children with the Changing Young Lives Foundation</li>'+
+            '<li>Box of Hope charity gift drive</li>'+
+            '<li>Environmental awareness campaigns within the local community</li>'+
+          '</ul>'+
+        '</div>'+
+
+        '<h3 style="color:#ffd700;font-size:16px;margin-bottom:8px">CYLF Halloween Workshop</h3>'+
+        '<p style="font-size:13px;color:#aaa;margin-bottom:8px">In collaboration with the <b>Changing Young Lives Foundation</b> (CYLF), our Volunteering Club students co-planned and delivered a Halloween-themed STEM workshop for underprivileged children. Rather than simply volunteering, my students took ownership of the event \u2014 designing hands-on science activities, preparing materials, and guiding the younger children through experiments that made science fun, accessible, and memorable.</p>'+
+        '<p style="font-size:13px;color:#aaa;margin-bottom:8px">The workshop combined the festive energy of Halloween with genuine scientific learning. Children made slime while discussing polymers, created bubbling potions to explore acid-base reactions, and built simple circuits to light up paper lanterns. Seeing my students step into teaching roles \u2014 explaining concepts patiently, adapting their language for younger learners, and celebrating every child\u2019s success \u2014 was one of the proudest moments of the year.</p>'+
+        '<p style="font-size:13px;color:#aaa;margin-bottom:14px">This partnership exemplifies what the Volunteering Club stands for: students using their skills not for grades, but for genuine community impact. The CYLF collaboration is now an annual fixture in our calendar, and we are exploring additional workshops for the Easter and summer holidays.</p>'+
+
+        '<h3 style="color:#ffd700;font-size:14px;margin-bottom:8px">Workshop Videos</h3>'+
+        '<div style="margin-bottom:8px;background:#2a2a3e;border-radius:6px;padding:10px"><b style="color:#ff00aa;font-size:12px">Activity Stations</b><video controls style="width:100%;max-height:340px;border-radius:4px;margin-top:6px" preload="none"><source src="media/extra-curricular/cylf/cylf-workshop-1.mp4" type="video/mp4"></video></div>'+
+        '<div style="margin-bottom:8px;background:#2a2a3e;border-radius:6px;padding:10px"><b style="color:#ff00aa;font-size:12px">Students Leading Activities</b><video controls style="width:100%;max-height:340px;border-radius:4px;margin-top:6px" preload="none"><source src="media/extra-curricular/cylf/cylf-workshop-2.mp4" type="video/mp4"></video></div>'+
+        '<div style="background:#2a2a3e;border-radius:6px;padding:10px"><b style="color:#ff00aa;font-size:12px">Halloween Science Fun</b><video controls style="width:100%;max-height:340px;border-radius:4px;margin-top:6px" preload="none"><source src="media/extra-curricular/cylf/cylf-workshop-3.mp4" type="video/mp4"></video></div>'+
       '</div>';
     }
   },

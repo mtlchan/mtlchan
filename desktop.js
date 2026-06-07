@@ -16,7 +16,8 @@ var Desktop = (function() {
     { id: 'physics-folder', name: 'Physics', icon: 'atom', appId: 'physics-folder', type: 'folder' },
     { id: 'cs-folder', name: 'Computer Science', icon: 'terminal', appId: 'cs-folder', type: 'folder' },
     { id: 'cv', name: 'CV', icon: 'cv', appId: 'cv', type: 'app' },
-    { id: 'binaryGame', name: "Mr Chan's Binary Game", icon: 'binaryGame', appId: 'binaryGame', type: 'app' }
+    { id: 'binaryGame', name: "Mr Chan's Binary Game", icon: 'binaryGame', appId: 'binaryGame', type: 'app' },
+    { id: 'extra-curricular', name: 'Extra-curricular', icon: 'rocket', appId: 'extra-curricular', type: 'folder' }
   ];
 
   function loadPositions() {
