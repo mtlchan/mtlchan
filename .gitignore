@@ -1,0 +1,8 @@
+node_modules/
+.astro/
+*.mov
+*.MOV
+*.heic
+*.HEIC
+.DS_Store
+Thumbs.db

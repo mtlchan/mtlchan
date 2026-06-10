@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Science Report Comment Generator</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f4f8; color: #1a202c; line-height: 1.5; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+h1 { font-size: 1.6rem; color: #2d3748; margin-bottom: 4px; }
+.subtitle { color: #718096; font-size: 0.9rem; margin-bottom: 16px; }
+
+.grade-selector { display: flex; gap: 8px; margin-bottom: 20px; }
+.grade-btn { padding: 8px 20px; border-radius: 6px; border: 2px solid #e2e8f0; background: white; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: #718096; transition: all 0.15s; }
+.grade-btn.active { border-color: #4299e1; background: #ebf8ff; color: #2b6cb0; }
+.grade-btn:hover:not(.active) { border-color: #a0aec0; }
+
+.summary-bar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.summary-card { background: white; border-radius: 8px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 1; min-width: 120px; text-align: center; }
+.summary-card .num { font-size: 1.8rem; font-weight: 700; }
+.summary-card .label { color: #718096; font-size: 0.8rem; }
+.summary-card.done .num { color: #38a169; }
+.summary-card.pending .num { color: #e53e3e; }
+.summary-card.total .num { color: #3182ce; }
+
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; background: white; border-radius: 8px; padding: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.tab-btn { padding: 8px 14px; border-radius: 6px; border: none; background: transparent; cursor: pointer; font-size: 0.85rem; color: #718096; transition: all 0.15s; }
+.tab-btn.active { background: #4299e1; color: white; }
+.tab-btn:hover:not(.active) { background: #edf2f7; }
+
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+.filter-bar input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem; flex: 1; max-width: 300px; }
+
+.student-cards { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.student-card { background: white; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); overflow: hidden; transition: box-shadow 0.2s; }
+.student-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.student-card.done { border-left: 4px solid #38a169; }
+.student-card.pending { border-left: 4px solid #e53e3e; }
+.student-card.has-cs { border-left: 4px solid #3182ce; }
+
+.card-header { padding: 14px 18px; background: #f7fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+.card-header h2 { font-size: 1.05rem; color: #2d3748; }
+.card-header .student-id { font-size: 0.78rem; color: #a0aec0; margin-left: 6px; }
+.card-header .chevron { transition: transform 0.2s; font-size: 0.8rem; color: #a0aec0; }
+.card-header .chevron.open { transform: rotate(180deg); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem; font-weight: 600; }
+.badge.missing { background: #fed7d7; color: #c53030; }
+.badge.generated { background: #c6f6d5; color: #276749; }
+.badge.existing { background: #bee3f8; color: #2b6cb0; }
+
+.card-body { padding: 16px 18px; display: none; }
+.card-body.open { display: block; }
+
+.comment-preview { background: #edf2f7; border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.82rem; max-height: 180px; overflow-y: auto; }
+.comment-preview h4 { font-size: 0.78rem; text-transform: uppercase; color: #718096; margin-bottom: 4px; }
+.comment-preview p { margin-bottom: 4px; color: #4a5568; }
+
+.questions { margin-bottom: 16px; }
+.question-block { margin-bottom: 14px; }
+.question-block label { display: block; font-weight: 600; margin-bottom: 3px; color: #2d3748; font-size: 0.88rem; }
+.question-block .hint { font-size: 0.78rem; color: #a0aec0; margin-bottom: 5px; }
+.question-block select, .question-block .textarea-wrap textarea { width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.88rem; font-family: inherit; }
+.question-block select:focus, .question-block .textarea-wrap textarea:focus { outline: none; border-color: #4299e1; box-shadow: 0 0 0 3px rgba(66,153,225,0.2); }
+.textarea-wrap { position: relative; }
+.textarea-wrap textarea { resize: vertical; min-height: 70px; width: 100%; padding-right: 90px; }
+.textarea-wrap .polish-btn { position: absolute; top: 6px; right: 6px; padding: 5px 10px; border-radius: 4px; border: 1px solid #e2e8f0; background: #edf2f7; cursor: pointer; font-size: 0.75rem; color: #4a5568; font-weight: 600; transition: all 0.15s; }
+.textarea-wrap .polish-btn:hover { background: #4299e1; color: white; border-color: #4299e1; }
+.textarea-wrap .polish-btn.spinning { pointer-events: none; opacity: 0.7; }
+.polish-indicator { font-size: 0.72rem; color: #38a169; margin-top: 3px; display: none; }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 6px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-primary { background: #4299e1; color: white; }
+.btn-primary:hover { background: #3182ce; }
+.btn-secondary { background: #edf2f7; color: #4a5568; }
+.btn-secondary:hover { background: #e2e8f0; }
+.btn-copy { background: #38a169; color: white; }
+.btn-copy:hover { background: #2f855a; }
+
+.generated-comment { background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 8px; padding: 14px; margin-top: 14px; display: none; }
+.generated-comment.show { display: block; }
+.generated-comment h4 { color: #276749; margin-bottom: 8px; font-size: 0.9rem; }
+.generated-comment .comment-text { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-size: 0.92rem; line-height: 1.7; color: #2d3748; white-space: pre-wrap; }
+.generated-comment .actions { margin-top: 10px; display: flex; gap: 8px; }
+
+.toast { position: fixed; bottom: 24px; right: 24px; background: #2d3748; color: white; padding: 12px 20px; border-radius: 8px; font-size: 0.85rem; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 100; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Computer Science Report Comments - EOY 2025-26</h1>
+<p class="subtitle">Generate CS comments for students across G7B and G8B</p>
+
+<div class="grade-selector">
+  <button class="grade-btn active" onclick="switchGrade('G8B')">G8B (20 students, 9 missing CS)</button>
+  <button class="grade-btn" onclick="switchGrade('G7B')">G7B (19 students, 19 missing CS)</button>
+</div>
+
+<div class="summary-bar" id="summaryBar"></div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('generate')">Generate</button>
+  <button class="tab-btn" onclick="switchTab('examples')">Existing CS</button>
+  <button class="tab-btn" onclick="switchTab('all')">All Students</button>
+</div>
+
+<div class="filter-bar">
+  <input type="text" id="searchInput" placeholder="Search by name..." oninput="renderStudents()">
+  <button class="btn btn-primary" onclick="exportAllComments()" style="font-size:0.85rem;">Export All</button>
+</div>
+
+<div class="student-cards" id="studentCards"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==============================
+// DATA
+// ==============================
+
+const g8bStudents = [
+  {id:"S20240015",name:"Haoran SUN",nick:"Andy",hasCS:true,csComment:"Haoran has a solid foundation in computer science, demonstrating clear understanding of number systems, Flowgorithm flowcharting, and trace tables. His grasp of algorithm structure and design is noteworthy. Although currently limited to block coding, the logic behind his algorithms is definitely beyond his grade level. To build on this strength, he is urged to explore programming further outside of class and immerse himself in more text‑based languages such as Python or JavaScript. Haoran has the potential to excel at higher levels.",
+   other:{homeroom:"Haoran is a highly responsible and diligent student who consistently supports his classmates and teachers. He has demonstrated strong academic effort this term.",humanities:"Haoran has a positive attitude in Grade 8 Humanities but struggles to recall key historical facts and concepts.",english:"Haoran is a quiet but attentive student who approaches his English with genuine effort and a positive attitude.",math:"Haoran continues to demonstrate a sound level of aptitude in Mathematics and has established a secure understanding of the majority of topics.",science:"Haoran has made excellent progress this semester. He continues to demonstrate a good ability to comprehend complex texts.",pe:"Haoran displays competent hand-eye coordination and tactical understanding in net court games."}},
+  {id:"S20250091",name:"Yuhan WANG",nick:"Bella",hasCS:true,csComment:"Yuhan has shown good potential in computer science, particularly with number systems. However, she often lacks the drive and motivation to complete her work fully. The quality of her submissions ranges from fair to good, but this inconsistency holds her back from reaching true potential. I implore her to develop a genuine passion for learning and take a more proactive approach to her studies. With greater commitment, Yuhan can achieve excellent results. A promising student. Let this be a turning point, Yuhan.",
+   other:{homeroom:"Yuhan is a valuable member of the class with impressive musical talents. She is kind and respectful, and often brings positive energy to group activities.",humanities:"Yuhan is a quiet member of the class and needs to engage more actively with our topics.",english:"Yuhan is a quietly dedicated student who listens attentively, makes careful notes, and makes good use of class handouts.",math:"Yuhan has shown a positive attitude towards Mathematics throughout the semester. Her calculation skills are strong.",science:"Yuhan has demonstrated encouraging and tangible progress this semester. Her academic vocabulary has developed noticeably.",pe:"Yuhan respects classroom expectations and has developed her hand-eye coordination skills through net and court games."}},
+  {id:"S20240009",name:"Xinran HE",nick:"Bethany",hasCS:true,csComment:"Xinran has often impressed with her logical thinking ability, designing algorithms with complex logic beyond her grade level in number systems, Flowgorithm flowcharting, and trace tables. I encourage her to keep growing her confidence and develop her communication skills so she can reach her full potential. By seeking more assistance from the teacher and expressing exactly which areas need further explanation, she will see large gains in her computer science progress. Xinran has a bright future in this subject.",
+   other:{homeroom:"Xinran shows herself to be a wonderfully kind and friendly individual who proactively welcomes new students.",humanities:"Xinran has shown continuous progress in History. She can complete her tasks at basic level.",english:"Xinran is a quiet and attentive student who makes good use of class handouts and guided materials.",math:"Xinran continues to demonstrate a diligent and conscientious approach to her Mathematics studies.",science:"Xinran has shown positive development in her scientific skills this semester.",pe:"Xinran has shown noticeable improvement in her attitude toward PE and engagement in tasks."}},
+  {id:"S20250099",name:"Cayden YUNG",nick:"Cayden",hasCS:true,csComment:"Cayden recently enrolled in computer science and has not yet been exposed to many of this year's topics, including number systems, flowcharting with Flowgorithm, and trace tables. I truly admire him for reaching out and seeking assistance when needed; this proactive attitude will serve him well. To catch up on missed material, I recommend he review previous Google Classroom posts, focusing especially on flowcharting and number systems. With continued effort and curiosity, Cayden will close the gap quickly.",
+   other:{homeroom:"Cayden is a kind and inclusive student who contributes positively to the class environment.",humanities:"Cayden shows limited effort and is often reluctant to engage with his Humanities coursework.",english:"Cayden is still finding his footing in the class. His written work reflects a developing foundation in English.",math:"Cayden is continuing to adjust to learning Mathematics in English after joining the class this year.",science:"",pe:""}},
+  {id:"S20250071",name:"Chun Yu CHAN",nick:"Chase",hasCS:true,csComment:"Chun Yu has shown high potential throughout this year in computer science, including number systems, computer hardware and programming structures. At times, he has submitted work to a high standard. To build on this, Chun Yu should focus on consistency and seek help from the teacher when stuck. By prioritising the learning goals each lesson, he will make much faster progress. He has the ability to excel.",
+   other:{homeroom:"Chun Yu shows excellent school spirit and enthusiasm by actively participating in a wide range of school activities.",humanities:"Chun Yu is an enthusiastic member of class who actively participates in class discussions.",english:"Chun Yu is an enthusiastic and outgoing member of the class whose confident speaking is a genuine asset.",math:"Chun Yu is working towards a more secure foundation in Mathematics this term.",science:"Chun Yu has made commendable progress in his written work this semester.",pe:"Chun Yu is to be commended for his consistently positive attitude toward PE."}},
+  {id:"S20240012",name:"Edward EDMONDSON",nick:"Edward",hasCS:true,csComment:"Edward's progress has been significantly stronger this term. A more mature approach to learning has enabled him to make greater strides in number systems, Flowgorithm flowcharting, and trace tables. He is completing work to a higher standard and showing better focus. To continue this upward trend, Edward should maintain his improved habits and seek help when challenges arise. His growth this term is commendable. With sustained effort, he will achieve even more.",
+   other:{homeroom:"Edward has shown noticeable positive growth since last term. He is becoming more mature and respectful towards others.",humanities:"Edward manages his regular classwork well, but he should challenge himself more during independent projects.",english:"Edward has made progress in English this year and demonstrates clear strength in speaking and presentation.",math:"Edward is continuing to develop his confidence and understanding in Mathematics this term.",science:"Edward has made a positive step this semester by demonstrating a greater willingness to use scientific concepts.",pe:"Edward is to be commended for his improvement in technical and tactical skill in basketball."}},
+  {id:"S20240027",name:"Chi Wai CHAN",nick:"Gigi",hasCS:true,csComment:"Chi Wai has had a mixed term in computer science. She occasionally reaches all the learning goals for the class; however, she has struggled to sustain concentration when given more abstract ideas to comprehend and learn. To improve, Chi Wai should practice breaking down complex concepts into smaller steps and ask for clarification early. With targeted support and consistent focus, she can turn these challenges into strengths. A term of growth opportunities.",
+   other:{homeroom:"Chi Wai consistently shows great responsibility by reminding classmates about daily lessons and tasks.",humanities:"",english:"",math:"",science:"Chi Wai participates enthusiastically in class experiments and is able to carry them out successfully.",pe:"Chi Wai is to be commended for her improvements in effort and resilience."}},
+  {id:"S20240023",name:"Hailey HO",nick:"Hailey",hasCS:true,csComment:"Hailey's effort and engagement in computer science this term have been good. When given tasks that allow her to apply her artistic talent and interest, she has truly shone brightly — particularly in projects involving design or visual elements such as ASCII art. To build on this strength, Hailey should continue connecting creative skills with technical concepts. A very promising term. Keep finding ways to blend art and computing, Hailey.",
+   other:{homeroom:"Hailey shows great responsibility and a keen eye for detail in her role as classroom designer.",humanities:"Hailey is a capable student. She can finish her tasks at basic level.",english:"Hailey is a quiet but highly attentive student who consistently puts in her best effort.",math:"Hailey has maintained a diligent and attentive attitude towards Mathematics this term.",science:"Hailey has made clear and encouraging progress this semester, particularly in her class participation.",pe:"Hailey has shown noticeable improvement in her attitude toward PE and engagement in tasks."}},
+  {id:"S20250003",name:"Sum Yi CHAN",nick:"Hailey",hasCS:true,csComment:"Sum Yi has on many occasions excelled in computer science, producing work to a very high standard across number systems, Flowgorithm flowcharting, and trace tables. She appears to grasp abstract concepts very well, demonstrating strong logical thinking and problem solving skills. I encourage her to continue this excellent trajectory and perhaps even expand her computer science learning outside of class through coding platforms or independent projects. Sum Yi has a natural aptitude.",
+   other:{homeroom:"Sum Yi consistently shows great responsibility and reliability in her duty as class encourager.",humanities:"Sum Yi is capable of achieving good results, and she can unlock her potential by taking a more active approach.",english:"",math:"Sum Yi has shown a steady attitude towards Mathematics this term.",science:"Sum Yi continues to perform at an outstanding level this semester.",pe:"Sum Yi is to be commended for her improvement in volleyball."}},
+  {id:"S20250098",name:"Xiaoman GE",nick:"Hailey",hasCS:true,csComment:"Xiaoman enrolled in computer science not long ago and has tried hard to adapt and catch up to her peers. Her effort and attitude are good, but she should be encouraged to seek help more often. A slight language barrier hinders engagement with content such as number systems, data storage, and computer hardware. To build a stronger foundation, she should review Google Classroom materials from the start of this year, including number systems, Flowgorithm flowcharting, and trace tables. Promising start. Keep working hard, Xiaoman.",
+   other:{homeroom:"Hailey is a positive role model in the homeroom and consistently demonstrates responsibility.",humanities:"",english:"Hailey has settled into the class with impressive determination, approaching her learning with a strong work ethic.",math:"Xiaoman is continuing to adjust to learning Mathematics in English after joining the class this year.",science:"",pe:"Hailey has shown noticeable improvement in her attitude toward PE and engagement in tasks."}},
+  {id:"S20240026",name:"Yu Kwan LEUNG",nick:"Hilton",hasCS:true,csComment:"Yu Kwan has shown improvement this term in computer science, with better self‑agency when completing work on number systems, Flowgorithm flowcharting, and trace tables. His logical thinking skills are strong, and he often completes assigned classwork to a high standard. To fully reach his potential, he should expand his learning by seeking more opportunities outside of class, such as coding challenges or online tutorials. Yu Kwan has the ability to excel further.",
+   other:{homeroom:"Yu Kwan is a kind and inclusive student who contributes positively to the class environment.",humanities:"Yu Kwan has made steady progress during this term. He has a genuine interest in WWII.",english:"Yu Kwan has made steady progress in English this year, developing greater awareness in his writing.",math:"Yu Kwan has continued to perform well in Mathematics this term and has shown further development.",science:"Yu Kwan has demonstrated genuine and encouraging improvement this semester.",pe:"Yu Kwan has shown steady improvement in locomotor patterns through basketball."}},
+  {id:"S20250086",name:"Hubery HONG",nick:"Hubery",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Hubery has shown improvement in organizational skills and time management this term. He is encouraged to show greater ownership over his learning and to seek help when needed.",humanities:"Hubery requires more engagement in History class. Currently he shows a limited grasp of core facts. He must focus on incorporating specific details and using sources accurately.",english:"Hubery has shown encouraging improvement in his learning attitude this year, making greater effort to complete and hand in assignments on time. However, his over-reliance on direct translation tools as a shortcut is actively hindering his progress.",math:"Hubery has made clear progress in Mathematics this term. His attitude towards learning has improved, and he approaches lessons with greater focus and responsibility.",science:"Hubery has shown some positive steps this semester, particularly in his engagement during group activities. His comprehension skills are developing.",pe:"Hubery demonstrates competent technical skill and tactical awareness in basketball. He has shown improvement in following classroom expectations and maintaining focus."}},
+  {id:"S20240014",name:"Tsz Long WAN",nick:"Issac",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Tsz Long is a kind and inclusive student who contributes positively to the class environment. He maintains good relationships with his peers and shows respect towards teachers.",humanities:"Issac struggles to meet the basic requirements for this subject. He has difficulties remaining focused and invested in classroom topics.",english:"Tsz Long Wan's spoken English is clear and he is able to communicate his basic ideas in class. Issac is a hard worker and his commitment is noticeable.",math:"",science:"Tsz Long is a very hard worker who consistently puts in strong effort in Science. He enthusiastically participates in class experiments. However, he struggles with deeper concepts.",pe:"Tsz Long is to be commended for his improvement in technical and tactical awareness in basketball. He thrives in group dynamics with his positive attitude."}},
+  {id:"S20250070",name:"Yuhong LIN",nick:"John",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Yuhong demonstrates strong teamwork skills and is well-respected by classmates. She is a friendly and cooperative student who contributes to a positive homeroom atmosphere.",humanities:"Yuhong completes his basic tasks consistently, but he would benefit from showing more initiative and diving deeper into his projects.",english:"Yuhong joined the class in January and has made progress in adjusting. He is able to produce promising work when provided with structured guidance.",math:"Yuhong has made clear progress in Mathematics this term and is becoming more comfortable learning the subject in English. He has strong calculation skills.",science:"Yuhong is a responsible and respectful member of the science class. He submits his homework on time without fail. His primary focus should be on developing his English proficiency.",pe:"Yuhong shows competent movement patterns and tactical understanding in invasion games. He performs best in team settings with peers he knows well."}},
+  {id:"S20250080",name:"Julien Chun Lam LEE",nick:"Julien",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Julien is a positive role model in the homeroom and consistently demonstrates respect towards his peers and teachers.",humanities:"Julien consistently meets the basic requirements for his work, but he would benefit from taking more initiative.",english:"",math:"Julien has shown a steady attitude towards Mathematics this term and is continuing to develop confidence. His written work is usually neat and well organised.",science:"Julien continues to be a very engaged and enthusiastic member of the science class. His homework remains of high quality.",pe:"Julien approaches PE with a healthy attitude, consistently polite and respectful. He has shown improvement in coordination through volleyball."}},
+  {id:"S20250056",name:"Tin Wing WONG",nick:"Karin",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Tin Wing displays impressive emotional regulation and handles challenges with a calm attitude. She is highly responsible and can always be trusted with important tasks.",humanities:"Tin Wing demonstrates a strong work ethic and actively explores her history topics with great curiosity. She has developed a thorough understanding of WWII.",english:"",math:"Tin Wing has shown a responsible and diligent attitude towards Mathematics this term. She completes her assignments carefully.",science:"Tin Wing has had another strong semester and continues to demonstrate a keen understanding of scientific concepts. She has made clear progress in collaborative contributions.",pe:"Tin Wing is a competent athlete who respects classroom expectations and remains actively engaged in all PE lessons."}},
+  {id:"S20250069",name:"Yixun TANG",nick:"Lucy",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Yixun is a motivated and enthusiastic learner who approaches new tasks with confidence. She brings positive energy to the homeroom.",humanities:"Yixun demonstrates inconsistent effort and often maintains a passive approach to her learning rather than showing active enthusiasm.",english:"",math:"Yixun has shown some progress in Mathematics since joining the class this year. She is continuing to adjust to learning Mathematics in English.",science:"Yixun has demonstrated impressive and well-rounded scientific abilities this semester, with her leadership during group work standing out as a particular strength.",pe:"Yixun has shown noticeable improvement in her attitude toward PE and engagement in tasks."}},
+  {id:"S20240005",name:"Man Yat CHOW",nick:"Man Yat",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Man Yat shows excellent leadership qualities and is always willing to help others in the class. He is a motivated and enthusiastic learner.",humanities:"Man Yat consistently puts in great effort and is a focused, active participant in class discussions. His written assignments are well-structured.",english:"",math:"Man Yat has shown a diligent and responsible attitude towards Mathematics this term. He approaches his work with care.",science:"Man Yat continues to perform at a truly exceptional level and has maintained his position as one of the strongest scientific thinkers in the class.",pe:"Man Yat is a competent all-rounder with regards to movement patterns and applying tactics and strategy in PE activities."}},
+  {id:"S20240038",name:"Xiao XU",nick:"Shawn",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Xiao shows a positive and friendly attitude towards his classmates. He has become more mature and responsible in completing his homework this term.",humanities:"Xiao has shown very little effort and often seems reluctant to engage with his work. He understands the basic timeline of events.",english:"",math:"Xiao continues to demonstrate a high level of aptitude in Mathematics. He is a quick and capable learner with particular strength in algebraic manipulation.",science:"Xiao has shown positive and encouraging improvement this semester. His engagement in class has become more focused and consistent.",pe:"Xiao possesses competent technical skill and tactical awareness in basketball, alongside noticeable improvement in classroom expectations and focus."}},
+  {id:"S20250094",name:"Jiajie HUANG",nick:"Wesley",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Jiajie is a positive role model in the homeroom and consistently demonstrates respect towards his peers and teachers. He shows strong teamwork skills.",humanities:"Jiajie has shown basic progress in History. His understanding of WWII is superficial. His assignments usually stick to surface level.",english:"",math:"Jiajie continues to demonstrate strong aptitude in Mathematics. He is a quick learner with particular strength in algebraic manipulation and number sense.",science:"Jiajie has made an impressive and commendable start since joining our school this term, settling in with great resilience and a positive attitude.",pe:"Jiajie possesses natural athletic abilities, particularly in basketball, where his skills are commendable and his joy for the game is evident."}}
+];
+
+const g7bStudents = [
+  {id:"S20250096",name:"Adrian Yik Hei CHAN",nick:"Adrian",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Adrian consistently shows great responsibility in his home learning, demonstrating excellent academic focus. As a principled and reliable friend, he naturally fosters harmony within his peer group.",humanities:"Adrian has shown minimal effort in Grade 7 Humanities and often seems reluctant to engage with his work. He has limited grasp of historical facts.",english:"Adrian joined our class in the second semester. He has shown strong abilities in English, but unfortunately this is not always reflected in his work.",math:"Adrian is a dedicated and hardworking student who approaches his mathematics studies with impressive patience and a consistently positive attitude.",science:"",pe:"Adrian brings a consistently positive attitude to PE and is actively engaged in every lesson. He enjoys team games and has shown clear improvement in football."}},
+  {id:"S20250040",name:"Zihan GAO",nick:"Anna",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Anna consistently shows great responsibility with her home learning tasks. As a balanced and exceptionally kind friend, she supports those around her.",humanities:"Zihan has shown basic understanding in Humanities. She now needs to build a stronger grasp of facts about the topics learned.",english:"Zihan has shown slight improvement in her work recently, which is encouraging. She is a sociable student who enjoys sharing her thoughts with peers.",math:"Zihan has continued to demonstrate a good grasp of mathematical concepts throughout this semester. She applies flexible and creative reasoning to complex problems.",science:"",pe:"Zihan brings genuine joy for learning; she consistently collaborates with peers and communicates positively during PE lessons. Her locomotor skills and hand-eye coordination have noticeably improved."}},
+  {id:"S20250062",name:"King Hei Anthony WONG",nick:"Anthony",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Anthony contributes immense talent and energy to the school football team. To reach his full potential, he should now strive to be more principled regarding punctuality and home learning.",humanities:"Anthony has shown minimal effort and often seems reluctant to engage in Humanities lessons. His grasp of key facts is limited.",english:"Anthony is an enthusiastic participant who willingly shares his ideas in class. However, his frequent absences have caused him to miss several key assessments.",math:"King Hei has made encouraging progress this semester, demonstrating greater effort in both his class engagement and his homework routine.",science:"",pe:"Anthony brings a consistently positive attitude to PE and is actively engaged in every lesson. He particularly enjoys invasion games, especially football."}},
+  {id:"S20250007",name:"Chiu Yee KWOK",nick:"Cherry",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Cherry consistently shows great responsibility in her daily home learning. A principled and trustworthy friend, she brings wonderful, balanced energy to the classroom.",humanities:"Chiu Yee works hard to complete tasks to a basic level and stays focused in Humanities lessons. She is building a basic understanding of different topics.",english:"Chiu Yee demonstrates diligence in taking notes and consistently completes her homework, which reflects her sense of responsibility.",math:"Chiu Yee has shown encouraging signs of progress this semester, particularly in her willingness to engage during collaborative learning activities.",science:"",pe:"Chiu Yee consistently brings a positive attitude and is actively engaged in PE lessons. She is open minded about trying new skills."}},
+  {id:"S20250020",name:"Tsz Fung MO",nick:"Chris",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Chris is consistently principled and highly responsible with his home learning deadlines. His remarkable creativity in the bilingual debating competition clearly shows how balanced he is as a student.",humanities:"Tsz Fung has shown outstanding effort and natural curiosity in Humanities lessons, often researching historical developments independently.",english:"Tsz Fung is a responsible and hardworking student who almost always completes his homework. He is adept at English and has grown his skillset this year.",math:"Tsz Fung has made meaningful progress this semester in bridging the gap between his strong conceptual understanding and his formal exam performance.",science:"",pe:"Tsz Fung consistently brings a positive attitude and is actively engaged in PE lessons, which raises the energy and focus of the whole class."}},
+  {id:"S20250024",name:"Lok Yu LAU",nick:"Coco",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Coco successfully manages her home learning with a highly principled and steady focus. A deeply supportive and balanced friend.",humanities:"Lok Yu shows a basic understanding in Humanities and tries to engage with new topics. She is still building her factual knowledge.",english:"Lok Yu is a diligent student who takes her work seriously. She stays focused in class and is a good note-taker.",math:"Lok Yu has made a positive improvement this semester in her ability to communicate her mathematical reasoning.",science:"",pe:"Lok Yu brings a consistently positive attitude to PE and reliably follows classroom expectations. Her competent hand-eye coordination developed through consistent volleyball practice."}},
+  {id:"S20250053",name:"Ziheng WANG",nick:"David",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"David is a principled and conscientious student who manages his daily home learning exceptionally well. His highly creative CNY musical performance was a wonderful act of contributing.",humanities:"Ziheng shows inconsistent effort and is often too passive in his learning. He has large gaps in his knowledge, especially with the order of historical events.",english:"Ziheng is a pleasant student with a good character. However, he continues to experience difficulties across all four areas of English.",math:"Ziheng has continued to demonstrate accomplished conceptual understanding and procedural fluency this semester.",science:"",pe:"Ziheng approaches PE lessons with a consistently positive attitude. He demonstrates competent locomotor patterns and clear understanding of game concepts."}},
+  {id:"S20250002",name:"Ching Kiu CHAN",nick:"Dennis",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Dennis is a genuinely supportive friend to his peers, but he must now show a more principled level of responsibility by handing in complete home learning tasks on time.",humanities:"Ching Kiu completes his tasks to a basic standard and stays engaged with his work, though he could benefit from showing more initiative.",english:"Ching Kiu possesses English speaking skills that are almost at a native level. However, he often appears reluctant to participate and frequently does not submit homework on time.",math:"Ching Kiu has shown moments of genuine capability in mathematics this semester.",science:"",pe:"Ching Kiu has made noticeable improvement in his locomotor skills through participation in simple drills and warm-ups."}},
+  {id:"S20250095",name:"Hei Tong Hailey WONG",nick:"Hailey",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Hailey is highly principled and handles all her home learning tasks with an admirable level of responsibility. A balanced and loyal friend.",humanities:"Hailey is making steady progress and has started to participate more actively in Humanities.",english:"Hailey joined our class in the second semester and has shown that she can be a diligent student. Her homework is always completed.",math:"Hailey has demonstrated a truly commendable and encouraging journey in mathematics this semester. She has shown impressive resilience and determination.",science:"",pe:"Hailey consistently brings a positive attitude to PE lessons, approaching activities with enthusiasm and encouraging others."}},
+  {id:"S20250044",name:"Wang Chun CHAN",nick:"Hayden",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Hayden is a balanced and exceptionally kind friend to his classmates. He must now match his impressive competition results by being more principled with his home learning.",humanities:"Wang Chun completes his tasks to a basic standard, though he would benefit from showing more initiative.",english:"Wang Chun is intelligent and skilled at English. However, he often refuses to take notes and frequently does not complete his homework.",math:"Wang Chun has demonstrated positive growth this semester, making a commendable effort to challenge himself with more complex, multi-step problems.",science:"",pe:"Wang Chun approaches PE with a consistently positive attitude and enthusiasm, which raises the energy of the whole class."}},
+  {id:"S20250064",name:"Chun Hei Hayden YIU",nick:"Hayden",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Hayden demonstrates great responsibility with his home learning tasks. A deeply caring, empathetic, and principled friend, he is highly valued by his peers.",humanities:"Hayden engages well with his Grade 7 Humanities lessons and tries to complete his work to a foundational standard.",english:"Hayden enjoys participating in classroom discussions. At times, he is very knowledgeable. His speaking is well-developed.",math:"Hayden has made positive strides this semester, showing greater effort in understanding the conceptual reasoning behind mathematical procedures.",science:"",pe:"Hayden approaches PE with a consistently positive attitude and genuine joy for being active, which energizes the class."}},
+  {id:"S20250010",name:"Ian WAI",nick:"Ian",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Ian consistently shows great responsibility in managing his home learning. As a friendly, approachable, and balanced student, he connects easily with others.",humanities:"Ian shows inconsistent effort and can be reluctant to engage with traditional tasks, although he responds better to digital learning tools.",english:"Ian is an enthusiastic writer with a creative mind. His writing is to a high standard.",math:"Ian is an enthusiastic and proactive learner who brings real energy to the mathematics classroom.",science:"",pe:"Ian brings a consistently positive attitude to PE and shows genuine joy for active learning."}},
+  {id:"S20250047",name:"Hoi Yiu Kaylie TANG",nick:"Kaylie",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Kailey shows great responsibility by working incredibly hard on all her daily learning tasks. A quiet, deeply principled, and balanced friend.",humanities:"Kaylie is a highly participatory student who shares excellent ideas, especially during digital tasks.",english:"Kaylie is a hardworking student who has adapted well to her new classroom and continues to show good results.",math:"Kaylie is a truly dedicated and hardworking student who approaches her mathematics studies with impressive patience.",science:"",pe:"Kaylie brings a consistently positive attitude to PE and is actively engaged in every lesson. Through regular practice in volleyball she has shown clear improvement."}},
+  {id:"S20250068",name:"Yu Tao YAN",nick:"Ken",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Ken is a highly principled and friendly teammate who participates with immense energy and passion in school basketball games.",humanities:"Ken demonstrates inconsistent effort and a passive approach to his learning. There are significant gaps in his factual knowledge.",english:"Yu Tao has encountered considerable challenges this year in meeting English class expectations. Focusing during lessons has been difficult.",math:"Yu Tao has made encouraging progress in his mathematical thinking this semester.",science:"",pe:"Yu Tao displays a positive attitude in PE and moves with competence across a range of activities."}},
+  {id:"S20250051",name:"Lucas JIANG",nick:"Lucas",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Lucas shows immense creative potential, which was clearly evident in his innovative entry for the Venture for Change competition.",humanities:"Lucas completes his tasks to a basic standard and remains engaged in class. However, he would benefit from showing more initiative.",english:"Lucas has faced significant challenges this year in meeting English class expectations.",math:"Lucas has made a commendable improvement this semester in the consistency and quality of his homework submissions.",science:"",pe:"Lucas demonstrates a positive attitude toward PE and is actively engaged in all lessons. He has shown notable improvement in teamwork."}},
+  {id:"S20250008",name:"Chue Hong Nathan WONG",nick:"Nathan",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Nathan showed incredible creativity and a fantastic contributing spirit during his entertaining talk show performance for the CNY celebration.",humanities:"Nathan currently struggles to maintain interest in the Humanities, which directly impacts his overall effort in class.",english:"Nathan joined our English class this semester and has shown himself to be a responsible and kind student. His speaking skills are strong.",math:"Nathan is an enthusiastic and proactive learner who brings real energy to the mathematics classroom.",science:"",pe:"Nathan brings a positive attitude to PE lessons and demonstrates competent movement patterns."}},
+  {id:"S20250065",name:"Yitian YE",nick:"Nellie",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Nellie is a wonderfully balanced and supportive friend to everyone in her class. Her vibrant creativity shone during the Venture for Change competition.",humanities:"Yitian completes her tasks to a basic standard and remains engaged with her work. She has shown initiative and steady progress.",english:"Yitian is an enthusiastic and vocal student who speaks with confidence. She puts genuine effort into taking thorough notes.",math:"Yitian has made significant progress this semester in her mathematical communication.",science:"",pe:"Yitian brings a positive attitude to PE lessons and displays genuine joy for active learning. She is a good communicator and strong role model."}},
+  {id:"S20250006",name:"Shuoen CHEN",nick:"Shawn",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Shawn consistently shows outstanding responsibility in both his academic home learning and his various extra-curricular pursuits.",humanities:"Shuoen consistently finishes his work and tackles difficult tasks with dedication. He has shown a deep understanding of the unit.",english:"Shuoen is an intelligent student who grasps new concepts quickly and puts genuine effort into his classwork.",math:"Shuoen has continued to perform at a consistently exemplary and benchmark-setting level throughout this semester.",science:"",pe:"Shuoen consistently shows respect for classroom expectations and demonstrates proficient locomotor patterns across a range of activities."}},
+  {id:"S20250085",name:"Zhengyun WEN",nick:"Vincent",hasCS:false,csComment:"",generated:"",
+   other:{homeroom:"Vincent is a balanced and reliable friend who handles his daily home learning tasks with great responsibility.",humanities:"Zhengyun consistently puts great effort into Humanities and is a focused, active participant in class.",english:"Zhengyun has the potential to achieve stronger academic results, though he would benefit from greater motivation and focus during lessons.",math:"Zhengyun has demonstrated positive progress this semester, particularly in the area of procedural accuracy and written mathematical communication.",science:"",pe:"Zhengyun has shown improvement in locomotor movement patterns and collaborative tasks through small-sided games."}}
+];
+
+// ====================
+// APP STATE
+// ====================
+let currentGrade = 'G8B';
+let currentTab = 'generate';
+
+function getStudents() { return currentGrade === 'G8B' ? g8bStudents : g7bStudents; }
+function getGradeLabel() { return currentGrade; }
+
+// ====================
+// POLISH FEATURE
+// ====================
+function polishText(textareaId) {
+  const textarea = document.getElementById(textareaId);
+  if (!textarea) return;
+  const raw = textarea.value.trim();
+  if (!raw) { showToast('Please type something first.'); return; }
+
+  const btn = textarea.parentElement.querySelector('.polish-btn');
+  if (btn) { btn.textContent = '...'; btn.classList.add('spinning'); }
+
+  setTimeout(() => {
+    const polished = applyPolishRules(raw);
+    textarea.value = polished;
+    const indicator = textarea.parentElement.parentElement.querySelector('.polish-indicator');
+    if (indicator) { indicator.style.display = 'block'; indicator.textContent = 'Polished! Review and edit if needed.'; }
+    if (btn) { btn.textContent = 'Polish'; btn.classList.remove('spinning'); }
+    showToast('Text polished!');
+  }, 300);
+}
+
+function applyPolishRules(text) {
+  let t = text.trim();
+
+  // Split into sentences/points
+  let parts = t.split(/[.;\n]+/).map(p => p.trim()).filter(p => p);
+
+  // If it looks like bullet points (short fragments)
+  if (parts.length > 1 && parts.every(p => p.length < 60)) {
+    // Convert bullet points to flowing prose
+    t = parts.map((p, i) => {
+      p = p.replace(/^[•\-\*\s]+/, '').trim();
+      if (!p) return '';
+      p = p.charAt(0).toUpperCase() + p.slice(1);
+      return p;
+    }).filter(p => p).join('. ') + '.';
+  }
+
+  // Ensure starts with capital
+  t = t.charAt(0).toUpperCase() + t.slice(1);
+
+  // Ensure ends with period
+  if (!/[.!?]$/.test(t)) t += '.';
+
+  // Common phrase replacements for report tone
+  const replacements = [
+    [/\bneeds to\b/gi, 'should'],
+    [/\bshould of\b/gi, 'should have'],
+    [/\bgotta\b/gi, 'must'],
+    [/\bwanna\b/gi, 'should'],
+    [/\bdoing good\b/gi, 'performing well'],
+    [/\bnot good at\b/gi, 'finding challenging'],
+    [/\bstop doing\b/gi, 'move away from'],
+    [/\bget better at\b/gi, 'improve in'],
+    [/\bwork on\b/gi, 'focus on developing'],
+    [/\btry to\b/gi, 'is encouraged to'],
+    [/\bneeds more\b/gi, 'would benefit from greater'],
+    [/\bdoesn't\b/gi, 'does not'],
+    [/\bdon't\b/gi, 'does not'],
+    [/\bcan't\b/gi, 'cannot'],
+    [/\bwon't\b/gi, 'will not'],
+    [/\bhe's\b/gi, 'he is'],
+    [/\bshe's\b/gi, 'she is'],
+    [/\bit's\b/gi, 'it is'],
+    [/\bthat's\b/gi, 'that is'],
+  ];
+
+  for (const [pattern, replacement] of replacements) {
+    t = t.replace(pattern, replacement);
+  }
+
+  // Add transition phrases for common patterns
+  if (!/^(to |by |in order to |moving forward|going forward|with |focusing on)/i.test(t)) {
+    // Check if it starts with a verb-like pattern
+    if (/^(practice|practise|complete|submit|review|develop|improve|focus|seek|ask|engage|build|work)/i.test(t)) {
+      t = t.charAt(0).toUpperCase() + t.slice(1);
+    } else if (!/^(he |she |they |the |a |an |this |his |her |their)/i.test(t)) {
+      t = 'To improve, ' + t.charAt(0).toLowerCase() + t.slice(1);
+    }
+  }
+
+  return t;
+}
+
+// ====================
+// COMMENT BUILDING
+// ====================
+function buildComment(id, q1, q2, q3) {
+  const student = getStudents().find(s => s.id === id);
+  if (!student) return '';
+
+  const name = student.name.split(' ')[0];
+  const femaleNames = ['Sum Yi','Yuhan','Xinran','Chi Wai','Hailey','Yixun','Tin Wing','Yuhong','Zihan','Anna','Cherry','Coco','Kaylie','Nellie','Chiu Yee','Lok Yu','Hei Tong'];
+  const pronoun = femaleNames.some(n => student.name.includes(n) || student.nick === n) ? 'she' : 'he';
+  const poss = pronoun === 'she' ? 'her' : 'his';
+
+  const attitudeMap = {
+    excellent: `${name} has shown an excellent and highly engaged attitude in computer science this term. ${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} consistently approaches tasks with curiosity and enthusiasm, actively participates in class discussions, and demonstrates genuine passion for the subject.`,
+    good: `${name} has demonstrated a positive and engaged attitude in computer science this term. ${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} generally stays focused during lessons, completes tasks with effort, and shows willingness to learn new concepts.`,
+    improving: `${name}'s attitude in computer science has shown encouraging improvement this term. ${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} is making greater effort to engage with the material and has become more focused during lessons.`,
+    inconsistent: `${name} has shown an inconsistent approach to computer science this term. While ${pronoun} has moments of good engagement, ${pronoun} often needs reminders to stay on task and complete work to ${poss} full potential.`,
+    limited: `${name} has shown limited engagement in computer science this term. ${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} is often reluctant to participate and needs to develop a more proactive approach to ${poss} learning.`,
+    new_student: `${name} recently enrolled in computer science and has been working to adapt and catch up to ${poss} peers. ${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} has shown a positive and willing attitude, making genuine effort despite the challenge of joining mid-year.`
+  };
+
+  const workMap = {
+    exceptional: `${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} has demonstrated a sophisticated understanding of topics including number systems, Flowgorithm flowcharting, and trace tables. ${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} produces work of an exceptional standard, showing advanced logical thinking and problem-solving skills that go beyond grade level.`,
+    high: `${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} has shown a strong grasp of topics covered this year, including number systems, Flowgorithm flowcharting, and trace tables. ${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} generally submits work to a high standard with good accuracy and thoughtful reasoning.`,
+    good: `${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} has developed a reasonable understanding of key topics such as number systems, Flowgorithm flowcharting, and trace tables. ${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} completes most assigned work to a satisfactory standard.`,
+    developing: `${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} has a developing understanding of core topics including number systems, Flowgorithm flowcharting, and trace tables. While ${pronoun} can follow instructions, ${poss} work would benefit from deeper engagement with the concepts and more consistent completion.`,
+    limited: `${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} struggles with core concepts in computer science, including number systems, Flowgorithm flowcharting, and trace tables. ${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} often finds it challenging to complete assignments and apply concepts independently.`,
+    catching_up: `${pronoun.charAt(0).toUpperCase()+pronoun.slice(1)} has been working to build ${poss} understanding of topics including number systems, Flowgorithm flowcharting, and trace tables. Considering ${pronoun} joined partway through, ${pronoun} is making steady progress in closing gaps in ${poss} knowledge.`
+  };
+
+  let closingLine = '';
+  if (q1 === 'excellent' || q2 === 'exceptional') closingLine = `${name} has a bright future in this subject.`;
+  else if (q1 === 'new_student' || q2 === 'catching_up') closingLine = `With continued effort and curiosity, ${name} will close the gap quickly.`;
+  else if (q1 === 'improving') closingLine = `With sustained effort and focus, ${name} can continue this positive trajectory and achieve strong results.`;
+  else if (q1 === 'limited' || q2 === 'limited') closingLine = `With greater commitment and consistent effort, ${name} has the potential to make meaningful progress.`;
+  else closingLine = `With continued effort and focus, ${name} has the potential to achieve excellent results.`;
+
+  return `${attitudeMap[q1]||attitudeMap['good']} ${workMap[q2]||workMap['good']} ${q3.trim()} ${closingLine}`;
+}
+
+function generateComment(id) {
+  const q1 = document.getElementById(`q1_${id}`)?.value;
+  const q2 = document.getElementById(`q2_${id}`)?.value;
+  const q3 = document.getElementById(`q3_${id}`)?.value;
+  if (!q1 || !q2 || !q3) { showToast('Please answer all three questions first.'); return; }
+
+  const comment = buildComment(id, q1, q2, q3);
+  const student = getStudents().find(s => s.id === id);
+  if (student) student.generated = comment;
+
+  const resultDiv = document.getElementById(`result_${id}`);
+  const commentText = document.getElementById(`commentText_${id}`);
+  if (resultDiv && commentText) { commentText.textContent = comment; resultDiv.classList.add('show'); }
+
+  const card = document.getElementById(`card_${id}`);
+  if (card) {
+    card.classList.remove('pending'); card.classList.add('done');
+    const badge = card.querySelector('.badge');
+    if (badge) { badge.textContent = 'Generated'; badge.className = 'badge generated'; }
+  }
+  updateSummaryBar();
+  showToast('Comment generated!');
+}
+
+function regenerateComment(id) {
+  const student = getStudents().find(s => s.id === id);
+  if (student) student.generated = '';
+  const resultDiv = document.getElementById(`result_${id}`);
+  if (resultDiv) resultDiv.classList.remove('show');
+  const card = document.getElementById(`card_${id}`);
+  if (card) {
+    card.classList.add('pending'); card.classList.remove('done');
+    const badge = card.querySelector('.badge');
+    if (badge) { badge.textContent = 'Missing CS'; badge.className = 'badge missing'; }
+  }
+  updateSummaryBar();
+}
+
+function updateSummaryBar() {
+  const students = getStudents();
+  const total = students.length;
+  const hasCsCount = students.filter(s => s.hasCS).length;
+  const missingCount = students.filter(s => !s.hasCS).length;
+  const generatedCount = students.filter(s => !s.hasCS && s.generated).length;
+  const remaining = missingCount - generatedCount;
+
+  document.getElementById('summaryBar').innerHTML = `
+    <div class="summary-card total"><div class="num">${total}</div><div class="label">Total Students</div></div>
+    <div class="summary-card" style="flex:1.5"><div class="num">${hasCsCount}</div><div class="label">Have CS Comments</div></div>
+    <div class="summary-card pending"><div class="num">${remaining}</div><div class="label">Remaining</div></div>
+    <div class="summary-card done"><div class="num">${generatedCount}</div><div class="label">Generated</div></div>
+  `;
+}
+
+// ====================
+// RENDERING
+// ====================
+function switchGrade(grade) {
+  currentGrade = grade;
+  document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.grade-btn[onclick="switchGrade('${grade}')"]`).classList.add('active');
+  currentTab = 'generate';
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tab-btn:first-child').classList.add('active');
+  renderStudents();
+  autoExpandFirst();
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
+  renderStudents();
+  autoExpandFirst();
+}
+
+function getFilteredStudents() {
+  const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  let list = [...getStudents()];
+  if (currentTab === 'generate') list = list.filter(s => !s.hasCS);
+  else if (currentTab === 'examples') list = list.filter(s => s.hasCS);
+  if (search) list = list.filter(s => s.name.toLowerCase().includes(search) || s.nick.toLowerCase().includes(search) || s.id.toLowerCase().includes(search));
+  return list;
+}
+
+function renderStudentCard(s) {
+  const done = s.hasCS || !!s.generated;
+  const statusClass = s.hasCS ? 'has-cs' : (done ? 'done' : 'pending');
+  const badge = s.hasCS
+    ? '<span class="badge existing">Existing CS</span>'
+    : (s.generated ? '<span class="badge generated">Generated</span>' : '<span class="badge missing">Missing CS</span>');
+
+  const otherHtml = Object.entries(s.other).filter(([_,v]) => v).map(([subj, comment]) =>
+    `<p><strong>${subj.charAt(0).toUpperCase()+subj.slice(1)}:</strong> ${comment}</p>`
+  ).join('');
+
+  if (s.hasCS) {
+    return `
+    <div class="student-card ${statusClass}">
+      <div class="card-header" onclick="toggleCard(this)"><div><h2>${s.name} <span class="student-id">${s.id}</span></h2><span style="font-size:0.82rem;color:#718096;">${s.nick}</span></div><div style="display:flex;align-items:center;gap:8px;">${badge}<span class="chevron">&#9660;</span></div></div>
+      <div class="card-body">
+        ${otherHtml ? `<div class="comment-preview"><h4>Other Subject Comments</h4>${otherHtml}</div>` : ''}
+        <div class="generated-comment show"><h4>Computer Science Comment</h4><div class="comment-text">${s.csComment}</div><div class="actions"><button class="btn btn-copy" onclick="copyText('${escapeAttr(s.csComment)}')">Copy</button></div></div>
+      </div></div>`;
+  }
+
+  return `
+    <div class="student-card ${statusClass}" id="card_${s.id}">
+      <div class="card-header" onclick="toggleCard(this)"><div><h2>${s.name} <span class="student-id">${s.id}</span></h2><span style="font-size:0.82rem;color:#718096;">${s.nick}</span></div><div style="display:flex;align-items:center;gap:8px;">${badge}<span class="chevron">&#9660;</span></div></div>
+      <div class="card-body">
+        ${otherHtml ? `<div class="comment-preview"><h4>Other Subject Comments (Reference)</h4>${otherHtml}</div>` : ''}
+        <div class="questions">
+          <div class="question-block">
+            <label>1. Learning Attitude</label>
+            <div class="hint">How would you describe ${s.nick}'s attitude in Computer Science?</div>
+            <select id="q1_${s.id}">
+              <option value="">-- Select --</option>
+              <option value="excellent">Excellent — highly engaged, proactive, curious, full effort</option>
+              <option value="good">Good — focused and willing, completes work with effort</option>
+              <option value="improving">Improving — better effort recently, developing consistency</option>
+              <option value="inconsistent">Inconsistent — varies; sometimes engaged but often distracted</option>
+              <option value="limited">Limited — rarely engaged, reluctant, minimal effort</option>
+              <option value="new_student">New/Late Enrollee — recently joined, still adjusting</option>
+            </select>
+          </div>
+          <div class="question-block">
+            <label>2. Level of Work</label>
+            <div class="hint">Quality of submitted work? (number systems, Flowgorithm, trace tables, programming)</div>
+            <select id="q2_${s.id}">
+              <option value="">-- Select --</option>
+              <option value="exceptional">Exceptional — beyond grade level, advanced logical thinking</option>
+              <option value="high">High standard — good grasp, accurate and thoughtful</option>
+              <option value="good">Good/Solid — understands most topics, generally accurate</option>
+              <option value="developing">Developing — can follow instructions, needs deeper understanding</option>
+              <option value="limited">Limited — struggles with core concepts, often incomplete</option>
+              <option value="catching_up">Catching up — gaps due to late enrolment, making effort</option>
+            </select>
+          </div>
+          <div class="question-block">
+            <label>3. Area to Improve</label>
+            <div class="hint">What specific skill or habit should ${s.nick} focus on?</div>
+            <div class="textarea-wrap">
+              <textarea id="q3_${s.id}" placeholder="e.g., Consistency in completing assignments, asking questions when stuck, practicing outside of class, focusing during independent tasks..."></textarea>
+              <button class="polish-btn" onclick="polishText('q3_${s.id}')" title="Polish with AI">&#10024; Polish</button>
+            </div>
+            <div class="polish-indicator"></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="generateComment('${s.id}')">Generate Comment</button>
+        <div class="generated-comment" id="result_${s.id}">
+          <h4>Generated Computer Science Comment</h4>
+          <div class="comment-text" id="commentText_${s.id}"></div>
+          <div class="actions">
+            <button class="btn btn-copy" onclick="copyComment('${s.id}')">Copy</button>
+            <button class="btn btn-secondary" onclick="regenerateComment('${s.id}')">Regenerate</button>
+          </div>
+        </div>
+      </div></div>`;
+}
+
+function renderStudents() {
+  const students = getFilteredStudents();
+  document.getElementById('studentCards').innerHTML = students.map(s => renderStudentCard(s)).join('') || '<p style="text-align:center;color:#718096;padding:20px;">No students found.</p>';
+  updateSummaryBar();
+}
+
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const chevron = header.querySelector('.chevron');
+  body.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+
+function autoExpandFirst() {
+  setTimeout(() => {
+    const first = document.querySelector('.student-card.pending .card-header') || document.querySelector('.student-card .card-header');
+    if (first) first.click();
+  }, 100);
+}
+
+// ====================
+// UTILS
+// ====================
+function copyComment(id) {
+  const student = getStudents().find(s => s.id === id);
+  copyToClipboard(student?.generated || student?.csComment || '');
+}
+function copyText(text) { copyToClipboard(text); }
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
+}
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg; toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+function escapeAttr(str) {
+  return str.replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\n/g,'\\n');
+}
+
+function exportAllComments() {
+  const generated = getStudents().filter(s => !s.hasCS && s.generated);
+  if (!generated.length) { showToast('No comments generated yet.'); return; }
+  let out = `Computer Science Report Comments — ${getGradeLabel()} EOY 2025-26\n${'='.repeat(60)}\n\n`;
+  generated.forEach(s => { out += `${s.name} (${s.nick}) — ${s.id}\n${s.generated}\n\n${'-'.repeat(40)}\n\n`; });
+  const blob = new Blob([out],{type:'text/plain'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `CS_Comments_${getGradeLabel()}.txt`; a.click();
+  showToast('Exported!');
+}
+
+// ====================
+// INIT
+// ====================
+window.addEventListener('DOMContentLoaded', () => { renderStudents(); autoExpandFirst(); });
+</script>
+</body>
+</html>

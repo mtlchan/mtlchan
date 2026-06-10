@@ -1,0 +1,53 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Home" activeTab="Home">
+  <div class="landing-page">
+    <div class="hero-photo">
+      [Photo]
+    </div>
+    <h1>Welcome</h1>
+    <p class="bio">
+      I am a passionate science educator dedicated to sparking curiosity and critical thinking
+      in students. With experience teaching chemistry, biology, and physics, I believe hands-on
+      learning—whether in the lab or on field trips—is the key to understanding the natural world.
+      This portfolio showcases highlights from my classroom, lab activities, and the Science Club.
+    </p>
+
+    <h2 style="font-family: var(--font-heading); color: var(--color-primary); margin-bottom: 0.5rem;">
+      Explore
+    </h2>
+
+    <div class="subjects-grid">
+      <a href="/subjects/chemistry" class="subject-card">
+        <h2>Chemistry</h2>
+        <p>Reactions, bonding, and the periodic table in action</p>
+      </a>
+      <a href="/subjects/biology" class="subject-card">
+        <h2>Biology</h2>
+        <p>Cells, ecosystems, genetics, and the diversity of life</p>
+      </a>
+      <a href="/subjects/physics" class="subject-card">
+        <h2>Physics</h2>
+        <p>Forces, energy, waves, and the laws of the universe</p>
+      </a>
+      <a href="/subjects/field-trips" class="subject-card">
+        <h2>Field Trips</h2>
+        <p>Learning beyond the classroom walls</p>
+      </a>
+      <a href="/subjects/lab-activities" class="subject-card">
+        <h2>Lab Activities</h2>
+        <p>Hands-on experiments and investigations</p>
+      </a>
+      <a href="/subjects/science-club" class="subject-card">
+        <h2>Science Club</h2>
+        <p>After-school projects, competitions, and fun</p>
+      </a>
+      <a href="/subjects/archaeology" class="subject-card">
+        <h2>Archaeology</h2>
+        <p>Uncovering the past through fieldwork and discovery</p>
+      </a>
+    </div>
+  </div>
+</Layout>

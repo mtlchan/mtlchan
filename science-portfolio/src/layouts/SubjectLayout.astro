@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export interface Props {
+  title: string;
+  subject: string;
+}
+
+const { title, subject } = Astro.props;
+---
+
+<Layout title={title} activeTab={subject}>
+  <article class="subject-page">
+    <header class="subject-header">
+      <h1>{title}</h1>
+    </header>
+    <div class="subject-content">
+      <slot />
+    </div>
+  </article>
+</Layout>
