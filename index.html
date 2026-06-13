@@ -5,775 +5,217 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
 <title>Science Portfolio</title>
 <style>
+/* === GLOBAL RESET (matching original) === */
 *,*::before,*::after{border:0;box-sizing:border-box;cursor:default;font-variant-numeric:tabular-nums;margin:0;outline:0;padding:0;-webkit-tap-highlight-color:transparent;text-rendering:optimizeLegibility;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 body,html{font-family:'Segoe UI',system-ui,Roboto,'Helvetica Neue',sans-serif}
 body{height:100%;overflow:hidden;position:fixed;text-size-adjust:none;-webkit-text-size-adjust:none}
-html{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);height:-webkit-fill-available}
-#desktop{contain:strict;height:100%;inset:0;overflow:clip;overscroll-behavior:none;position:fixed;width:100vw}
-#icons{display:grid;gap:28px 1px;grid-auto-flow:row;grid-template-columns:repeat(auto-fill,74px);grid-template-rows:repeat(auto-fill,70px);height:calc(100% - 30px);overflow:visible;padding:5px 0 21px;position:relative;z-index:1}
-.icon{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2px;width:74px;height:70px;color:#fff;text-align:center;font-size:12px;line-height:1.3}
-.icon:hover{background:hsla(207,100%,72%,.15);outline:1px solid hsla(207,100%,72%,.4)}
-.icon.selected{background:hsla(207,100%,72%,.25);outline:1px solid hsla(207,100%,72%,.6)}
-.icon img,.icon svg{width:32px;height:32px;margin-bottom:2px;pointer-events:none}
-.icon span{word-break:break-word;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+html{background:#0a0a1a;height:-webkit-fill-available}
+input,textarea{cursor:text;-webkit-user-select:text;user-select:text}
+ol,ul{list-style:none}
+
+/* === DESKTOP === */
+#desktop{contain:strict;height:100%;inset:0;overflow:clip;position:fixed;width:100vw}
+#desktop .bg{background-color:#0a0a1a;background-image:radial-gradient(circle,rgba(0,240,255,.06) 1px,transparent 1px),linear-gradient(135deg,#0a0a1a 0%,#1a0a2e 50%,#0a1628 100%);background-size:24px 24px,100% 100%;height:100%;left:0;position:absolute;top:0;width:100%;z-index:-1}
+#desktop-title{background:linear-gradient(90deg,#00f0ff,#ff00aa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:clamp(28px,6vw,72px);font-weight:700;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.1;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
+#desktop-subtitle{color:rgba(255,255,255,.4);font-size:clamp(13px,1.8vw,20px);font-weight:400;font-family:'Segoe UI',system-ui,sans-serif;margin-top:4px;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+#desktop-role{color:rgba(255,255,255,.5);font-size:clamp(15px,2vw,24px);font-weight:400;font-family:'Segoe UI',system-ui,sans-serif;margin-top:4px;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+#desktop-about{color:rgba(255,255,255,.55);font-size:clamp(12px,1.4vw,17px);font-weight:400;font-family:'Segoe UI',system-ui,sans-serif;margin-top:12px;max-width:520px;line-height:1.6;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+#desktop-portrait{flex-shrink:0}
+#desktop-portrait img{display:block;width:clamp(120px,16vw,220px);height:auto;border-radius:6px}
+#desktop-watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;display:flex;align-items:center;gap:clamp(16px,3vw,40px);color:#fff}
+#desktop-about-bar{position:absolute;bottom:80px;left:0;right:0;z-index:1;pointer-events:none;text-align:center;padding:12px 8%;background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+#desktop-about-bar span{color:rgba(255,255,255,.6);font-size:clamp(12px,1.4vw,17px);font-weight:400;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+#icon-grid{display:flex;flex-wrap:wrap;gap:32px 12px;justify-content:center;align-content:flex-start;align-items:flex-start;padding:60px 12px 16px 12px}
+.icon{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px;width:120px;height:128px;color:#fff;text-align:center;font-size:16px;line-height:1.3;position:relative;border-radius:3px}
+.icon:hover:not(.dragging){background:rgba(0,240,255,.12);outline:1px solid rgba(0,240,255,.35)}
+.icon.selected{background:rgba(0,240,255,.2);outline:1px solid rgba(0,240,255,.55)}
+.icon.dragging{opacity:.7;z-index:9999;pointer-events:none;position:fixed;width:120px;height:128px}
+.icon .icon-img{width:64px;height:64px;margin-bottom:6px;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.icon .icon-img svg{width:64px;height:64px;filter:drop-shadow(0 0 3px rgba(0,240,255,.15))}
+.icon span{word-break:break-word;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-shadow:0 1px 3px rgba(0,0,0,.8);width:112px;text-align:center}
+.icon input.rename{border:1px solid #fff;background:#0d111a;color:#fff;font-size:16px;text-align:center;width:108px;outline:0;padding:1px 2px;margin-top:-2px}
+.drop-target{outline:2px dashed rgba(0,240,255,.6)!important;border-radius:3px}
+
+/* === TASKBAR === */
 #taskbar{background:hsla(0,0%,10%,.75);bottom:0;contain:size layout;height:30px;left:0;position:absolute;right:0;width:100vw;z-index:100000;display:flex;align-items:center;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.taskbar-btn{display:flex;align-items:center;justify-content:center;width:36px;height:100%;fill:#fff;cursor:default}
-.taskbar-btn:hover{background:hsla(0,0%,25%,.7)}
-.taskbar-btn:hover svg{fill:hsla(207,100%,72%,.9)}
-.taskbar-btn:active{background:hsla(0,0%,20%,.7)}
+.taskbar-btn{display:flex;align-items:center;justify-content:center;width:36px;height:100%;fill:#fff;cursor:default;flex-shrink:0}
+.taskbar-btn:hover{background:rgba(0,240,255,.08)}
+.taskbar-btn:hover svg{fill:#00f0ff}
+.taskbar-btn:active{background:rgba(0,240,255,.12)}
 .taskbar-btn svg{height:15px}
-#window-tabs{display:flex;height:100%;margin:0 3px;overflow:hidden;flex:1;column-gap:1px}
-.window-tab{display:flex;align-items:center;padding:0 8px;height:26px;margin-top:2px;background:hsla(0,0%,100%,.1);color:#fff;font-size:11px;min-width:0;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:2px 2px 0 0;cursor:default}
+#window-tabs{display:flex;height:100%;margin:0 3px;overflow-x:auto;overflow-y:hidden;flex:1;column-gap:1px;scrollbar-width:none}
+#window-tabs::-webkit-scrollbar{display:none}
+.window-tab{display:flex;align-items:center;padding:0 8px;height:26px;margin-top:2px;background:hsla(0,0%,100%,.1);color:#fff;font-size:11px;min-width:40px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:2px 2px 0 0;cursor:default;flex-shrink:0}
 .window-tab:hover{background:hsla(0,0%,100%,.15)}
-.window-tab.active{background:hsla(0,0%,100%,.25)}
-.window-tab img{width:14px;height:14px;margin-right:5px}
-#tray{display:flex;align-items:center;height:100%;margin-left:auto;padding:0 8px;color:#fff;font-size:11px;cursor:default}
-#clock{padding:0 4px;cursor:default}
-#clock:hover{background:hsla(0,0%,25%,.7)}
-.window{position:absolute;background:#1e1e2e;border:1px solid #333;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.5);min-width:300px;min-height:200px;display:flex;flex-direction:column;overflow:hidden;z-index:10}
-.window.focused{z-index:100;border-color:#555}
-.window-titlebar{display:flex;align-items:center;height:30px;background:#2a2a3e;padding:0 8px;cursor:default}
-.window-titlebar span{color:#ccc;font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.window-titlebar button{width:28px;height:28px;background:none;border:none;color:#ccc;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:default;border-radius:4px}
-.window-titlebar button:hover{background:hsla(0,0%,100%,.1)}
-.window-titlebar button.close:hover{background:#c42b1c;color:#fff}
-.window-body{flex:1;overflow:auto;padding:12px;color:#ccc;font-size:13px}
-#start-menu{position:absolute;bottom:30px;left:0;width:320px;height:420px;background:hsla(0,0%,10%,.85);border-radius:0 8px 0 0;border:1px solid #333;border-bottom:0;border-left:0;display:none;flex-direction:column;overflow:hidden;z-index:99999;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.window-tab.active{background:hsla(0,0%,100%,.25);border-bottom:2px solid #00f0ff}
+.window-tab.minimized{opacity:.6;font-style:italic}
+#tray{display:flex;align-items:center;height:100%;margin-left:auto;padding:0 6px;color:#fff;font-size:11px;cursor:default;flex-shrink:0;gap:2px}
+#tray:hover{background:rgba(0,240,255,.08)}
+#clock-canvas{display:block;margin-right:2px}
+
+/* === START MENU === */
+#start-menu{position:absolute;bottom:30px;left:0;width:360px;height:480px;background:hsla(0,0%,10%,.88);border-radius:0 8px 0 0;border:1px solid #333;border-bottom:0;border-left:0;display:none;flex-direction:row;overflow:hidden;z-index:99999;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 #start-menu.open{display:flex}
-.start-sidebar{writing-mode:vertical-lr;text-orientation:mixed;transform:rotate(180deg);width:36px;background:hsla(0,0%,100%,.03);padding:8px 4px;color:#aaa;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px}
-.start-content{flex:1;padding:8px;overflow-y:auto}
+.start-sidebar{writing-mode:vertical-lr;transform:rotate(180deg);width:38px;min-width:38px;background:hsla(0,0%,100%,.03);padding:10px 4px;color:#aaa;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;gap:8px;letter-spacing:3px}
+.start-list{flex:1;padding:8px 4px;overflow-y:auto}
 .start-item{display:flex;align-items:center;padding:8px 12px;color:#fff;font-size:13px;border-radius:4px;cursor:default;gap:10px}
-.start-item:hover{background:hsla(0,0%,100%,.08)}
-.start-item img,.start-item svg{width:24px;height:24px}
-#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:99998}
-#overlay.open{display:block}
-.search-box{position:absolute;left:72px;bottom:34px;background:hsla(0,0%,10%,.9);border:1px solid #444;border-radius:6px;padding:8px;z-index:100001;display:none;width:300px}
-.search-box.open{display:block}
-.search-box input{width:100%;padding:6px 10px;background:hsla(0,0%,100%,.08);border:1px solid #555;border-radius:4px;color:#fff;font-size:13px;outline:0;cursor:text;-webkit-user-select:text;user-select:text}
-.search-box input:focus{border-color:#0078d4}
-.search-results{margin-top:4px}
-.search-result{padding:6px 10px;color:#ccc;font-size:12px;cursor:default;border-radius:3px}
-.search-result:hover{background:hsla(207,100%,72%,.2)}
+.start-item:hover{background:rgba(0,240,255,.1)}
+.start-item .start-item-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.start-sep{margin:6px 12px;border-top:1px solid #444}
+
+/* === CONTEXT MENU === */
+#context-menu{position:fixed;background:hsla(0,0%,12%,.95);border:1px solid #444;border-radius:6px;padding:4px 0;z-index:100001;display:none;min-width:180px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,.6)}
+#context-menu.open{display:block}
+.ctx-item{padding:6px 16px;color:#fff;font-size:12px;cursor:default;display:flex;align-items:center;justify-content:space-between}
+.ctx-item:hover{background:rgba(0,240,255,.2)}
+.ctx-item.disabled{color:#666;pointer-events:none}
+.ctx-item .shortcut{color:#888;margin-left:24px;font-size:11px}
+.ctx-sep{margin:4px 0;border-top:1px solid #444}
+.ctx-sub{position:relative}
+.ctx-sub::after{content:">";margin-left:auto;font-size:11px;color:#888}
+.ctx-sub-menu{position:absolute;left:100%;top:-4px;background:hsla(0,0%,12%,.95);border:1px solid #444;border-radius:6px;padding:4px 0;min-width:160px;display:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,.6)}
+.ctx-sub:hover>.ctx-sub-menu{display:block}
+
+/* === CALENDAR === */
+#calendar-popup{position:absolute;right:0;bottom:34px;background:hsla(0,0%,12%,.95);border:1px solid #444;border-radius:8px;padding:8px;z-index:100001;display:none;width:260px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 4px 16px rgba(0,0,0,.6)}
+#calendar-popup.open{display:block}
+.cal-header{display:flex;align-items:center;justify-content:space-between;color:#fff;padding:4px 8px;font-size:14px;font-weight:600}
+.cal-header button{background:none;border:none;color:#fff;font-size:16px;cursor:default;padding:2px 8px;border-radius:4px}
+.cal-header button:hover{background:rgba(0,240,255,.15)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;text-align:center;color:#ccc;font-size:12px}
+.cal-grid .day-name{color:#888;padding:6px 0;font-size:11px;font-weight:600}
+.cal-grid .day{padding:8px 0;cursor:default;border-radius:4px}
+.cal-grid .day:hover{background:hsla(0,0%,100%,.08)}
+.cal-grid .day.other{color:#555}
+.cal-grid .day.today{background:rgba(0,240,255,.25);font-weight:700}
+.cal-grid .day.current-month{color:#fff}
+
+/* === WINDOW === */
+.window{position:absolute;background:#0d111a;border:1px solid #1e2a3a;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,.6);min-width:166px;min-height:70px;display:flex;flex-direction:column;overflow:hidden;z-index:10}
+.window.focused{border-color:#00f0ff;box-shadow:0 0 16px rgba(0,240,255,.12),0 4px 28px rgba(0,0,0,.8)}
+.window-titlebar{display:flex;align-items:center;height:30px;background:#111827;padding:0 4px 0 10px;cursor:default;flex-shrink:0}
+.window.focused .window-titlebar{background:#1a2340}
+.window-titlebar span{color:#ccc;font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.window-titlebar button{width:30px;height:26px;background:none;border:none;color:#ccc;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:default;border-radius:4px;flex-shrink:0}
+.window-titlebar button:hover{background:hsla(0,0%,100%,.1)}
+.window-titlebar button.close:hover{background:#ff00aa;color:#fff}
+.window-body{flex:1;overflow:auto;color:#ccc;font-size:13px;padding:12px;background:#0d111a}
+.window-body a{color:#00f0ff;cursor:pointer}
+.window-body a:hover{text-decoration:underline}
+.window.maximized{border-radius:0}
+.window.maximized .resize-handle{display:none}
+.resize-handle{position:absolute;z-index:10}
+.resize-handle.top{top:-3px;left:0;right:0;height:6px;cursor:ns-resize}
+.resize-handle.bottom{bottom:-3px;left:0;right:0;height:6px;cursor:ns-resize}
+.resize-handle.left{left:-3px;top:0;bottom:0;width:6px;cursor:ew-resize}
+.resize-handle.right{right:-3px;top:0;bottom:0;width:6px;cursor:ew-resize}
+.resize-handle.topLeft{top:-3px;left:-3px;width:12px;height:12px;cursor:nwse-resize}
+.resize-handle.topRight{top:-3px;right:-3px;width:12px;height:12px;cursor:nesw-resize}
+.resize-handle.bottomLeft{bottom:-3px;left:-3px;width:12px;height:12px;cursor:nesw-resize}
+.resize-handle.bottomRight{bottom:-3px;right:-3px;width:12px;height:12px;cursor:nwse-resize}
+
+/* === SEARCH BOX === */
+#search-box{position:absolute;left:72px;bottom:34px;background:hsla(0,0%,10%,.9);border:1px solid #444;border-radius:8px;padding:8px;z-index:100001;display:none;width:340px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#search-box.open{display:block}
+#search-box input{width:100%;padding:8px 10px;background:hsla(0,0%,100%,.08);border:1px solid #555;border-radius:4px;color:#fff;font-size:13px;outline:0;cursor:text;-webkit-user-select:text;user-select:text}
+#search-box input:focus{border-color:#00f0ff}
+#search-results{margin-top:4px;max-height:200px;overflow-y:auto}
+.search-result{padding:7px 10px;color:#ccc;font-size:12px;cursor:default;border-radius:3px}
+.search-result:hover{background:rgba(0,240,255,.15)}
+
+/* === DRAG CLONE === */
+#drag-clone{position:fixed;pointer-events:none;z-index:99999;display:none;opacity:.8}
+/* === PARTICLES === */
 #particles-canvas{position:absolute;inset:0;width:100%;height:calc(100% - 30px);z-index:0;pointer-events:none}
-.progress-bar{height:3px;background:#333;border-radius:0 0 2px 2px;overflow:hidden}
-.progress-bar .fill{height:100%;background:linear-gradient(90deg,#4fc3f7,#7c4dff);border-radius:0 0 2px 2px;transition:width 0.3s;width:0}
-#fact-widget{position:absolute;right:12px;bottom:36px;background:hsla(0,0%,10%,.85);border:1px solid #444;border-radius:8px;padding:8px 12px;color:#ccc;font-size:12px;max-width:220px;z-index:1;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);cursor:default;transition:all 0.3s;overflow:hidden}
-#fact-widget.minimized{max-width:28px;padding:4px 6px;border-radius:50%}
-#fact-widget.minimized .fact-header{margin:0;justify-content:center}
-#fact-widget.minimized .fact-label{display:none}
-#fact-widget .fact-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;min-width:0}
-#fact-widget .fact-label{color:#ffd700;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
-#fact-widget .fact-btn{background:none;border:none;color:#888;font-size:14px;cursor:default;line-height:1;padding:0 2px;border-radius:3px}
-#fact-widget .fact-btn:hover{color:#fff;background:hsla(0,0%,100%,.08)}
-#fact-widget .fact-text{line-height:1.5;color:#aaa;display:none}
-#fact-widget:not(.minimized) .fact-text{display:block}
-#fact-widget .fact-next{display:block;margin-top:6px;background:none;border:none;color:#4fc3f7;font-size:11px;cursor:default;padding:2px 4px;border-radius:3px;width:100%;text-align:center}
-#fact-widget .fact-next:hover{background:hsla(0,0%,100%,.06)}
-#fact-widget:not(.minimized) .fact-next{display:block}
-#fact-widget.minimized .fact-next{display:none}
-#tetris-container{display:flex;gap:12px;justify-content:center;align-items:flex-start;position:relative;height:100%}
-#tetris-board{border:1px solid #444;border-radius:2px}
-#tetris-side{min-width:80px;text-align:center}
-#tetris-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.88);align-items:center;justify-content:center;z-index:10;flex-direction:column;border-radius:4px}
-#tetris-overlay.show{display:flex}
-#tetris-msg{color:#fff;font-size:22px;font-weight:700;margin-bottom:12px}
-#tetris-score-final{color:#4fc3f7;font-size:14px;margin-bottom:16px}
-#tetris-restart{padding:8px 20px;background:#4fc3f7;color:#000;border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer}
-#tetris-restart:hover{background:#81d4fa}
-#tetris-pause-hint{color:#888;font-size:11px;margin-top:12px}
-#tetris-controls{color:#888;font-size:10px;text-align:center;padding:4px 0;margin-top:4px;line-height:1.6}
+/* === PROGRESS BARS === */
+.progress-bar{height:3px;background:#333;border-radius:0 0 2px 2px;overflow:hidden;flex-shrink:0}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,#00f0ff,#ff00aa);border-radius:0 0 2px 2px;transition:width 0.3s;width:0}
+/* === SLIDESHOW WIDGET === */
+#slideshow-widget{position:absolute;right:12px;top:200px;background:hsla(0,0%,10%,.85);border:1px solid #444;border-radius:8px;padding:6px 8px;color:#ccc;width:240px;z-index:1;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);cursor:default;transition:all 0.3s;overflow:hidden}
+#slideshow-widget.minimized{width:28px;padding:4px 6px;border-radius:50%}
+#slideshow-widget.minimized .ss-body{display:none}
+#slideshow-widget .ss-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;min-width:0}
+#slideshow-widget .ss-label{color:#00f0ff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
+#slideshow-widget .ss-btn{background:none;border:none;color:#888;font-size:14px;cursor:default;line-height:1;padding:0 2px;border-radius:3px}
+#slideshow-widget .ss-btn:hover{color:#fff;background:hsla(0,0%,100%,.08)}
+#slideshow-widget .ss-image-wrap{width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:4px;background:#111;margin-bottom:4px}
+#slideshow-widget .ss-image-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+#slideshow-widget .ss-caption{font-size:11px;color:#aaa;line-height:1.4;margin-bottom:6px;text-align:center;min-height:30px;display:flex;align-items:center;justify-content:center}
+#slideshow-widget .ss-controls{display:flex;align-items:center;justify-content:space-between;gap:2px}
+#slideshow-widget .ss-nav{background:none;border:none;color:#888;font-size:16px;cursor:default;padding:2px 6px;border-radius:3px;line-height:1}
+#slideshow-widget .ss-nav:hover{color:#fff;background:hsla(0,0%,100%,.08)}
+#slideshow-widget .ss-counter{color:#555;font-size:10px;margin:0 4px}
 </style>
 </head>
 <body>
-<div id="overlay" onclick="closeStartMenu()"></div>
 <div id="desktop">
+  <div class="bg"></div>
   <canvas id="particles-canvas"></canvas>
-  <div id="icons" onclick="deselectAll(event)">
-    <div class="icon" ondblclick="openWindow('computer','This PC')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="40" height="28" rx="3" fill="none" stroke="#fff" stroke-width="2"/><rect x="18" y="34" width="12" height="3" fill="#fff"/><rect x="22" y="37" width="4" height="4" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
-      <span>This PC</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('files','File Explorer')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M6 10h14l4 4h18a3 3 0 013 3v20a3 3 0 01-3 3H6a3 3 0 01-3-3V13a3 3 0 013-3z" fill="none" stroke="#ffd700" stroke-width="2"/></svg>
-      <span>File Explorer</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('browser','Browser')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="20" fill="none" stroke="#4fc3f7" stroke-width="2"/><ellipse cx="24" cy="24" rx="9" ry="20" fill="none" stroke="#4fc3f7" stroke-width="1"/><line x1="4" y1="24" x2="44" y2="24" stroke="#4fc3f7" stroke-width="1"/></svg>
-      <span>Browser</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('terminal','Terminal')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="40" height="32" rx="4" fill="#1a1a2e" stroke="#fff" stroke-width="2"/><text x="10" y="22" fill="#0f0" font-size="10" font-family="monospace">&gt;_</text><text x="10" y="32" fill="#0f0" font-size="10" font-family="monospace">$</text></svg>
-      <span>Terminal</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('welcome','Welcome')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M6 10h15l4 4h17a3 3 0 013 3v18a3 3 0 01-3 3H6a3 3 0 01-3-3V13a3 3 0 013-3z" fill="none" stroke="#ffd700" stroke-width="2"/></svg>
-      <span>Welcome</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('chemistry','Chemistry')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M17 2h14v16l10 20H7l10-20V2z" fill="none" stroke="#4fc3f7" stroke-width="2"/><rect x="15" y="2" width="6" height="4" rx="1" fill="#4fc3f7"/><path d="M23 20h2m-4 4h6m-4 4h2m-4 4h6" stroke="#7c4dff" stroke-width="1"/></svg>
-      <span>Chemistry</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('biology','Biology')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M14 6c4 6 4 30 20 36M34 6c-4 6-4 30-20 36" fill="none" stroke="#66bb6a" stroke-width="2"/><line x1="16" y1="10" x2="32" y2="7" stroke="#a5d6a7" stroke-width="1.5"/><line x1="16" y1="20" x2="32" y2="17" stroke="#a5d6a7" stroke-width="1.5"/><line x1="15" y1="30" x2="31" y2="27" stroke="#a5d6a7" stroke-width="1.5"/><line x1="15" y1="40" x2="31" y2="37" stroke="#a5d6a7" stroke-width="1.5"/></svg>
-      <span>Biology</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('physics','Physics')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="6" fill="#ff7043"/><ellipse cx="24" cy="24" rx="20" ry="7" fill="none" stroke="#ffab91" stroke-width="1.5" transform="rotate(0 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="7" fill="none" stroke="#ffab91" stroke-width="1.5" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="7" fill="none" stroke="#ffab91" stroke-width="1.5" transform="rotate(-60 24 24)"/></svg>
-      <span>Physics</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('field-trips','Field Trips')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="20" fill="none" stroke="#ffca28" stroke-width="2"/><polygon points="24,6 28,28 20,28" fill="#ffca28"/><polygon points="24,42 20,20 28,20" fill="#fff"/><circle cx="24" cy="24" r="2" fill="#ff8f00"/></svg>
-      <span>Field Trips</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('lab-activities','Lab Activities')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="16" width="8" height="22" rx="1" fill="none" stroke="#ce93d8" stroke-width="2"/><rect x="14" y="10" width="16" height="20" rx="2" fill="none" stroke="#ce93d8" stroke-width="2"/><circle cx="28" cy="16" r="4" fill="none" stroke="#ce93d8" stroke-width="1.5"/><circle cx="22" cy="12" r="2" fill="#ba68c8"/><line x1="6" y1="38" x2="40" y2="38" stroke="#ce93d8" stroke-width="2"/><path d="M38 22l4 16h-8l4-16z" fill="none" stroke="#ce93d8" stroke-width="1.5"/></svg>
-      <span>Lab Activities</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('science-club','Science Club')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M24 2l-6 18h12L24 2z" fill="#ef5350"/><rect x="19" y="18" width="10" height="16" rx="2" fill="#e57373" stroke="#c62828" stroke-width="1"/><path d="M17 28l-4 6h22l-4-6" fill="none" stroke="#ffcdd2" stroke-width="1.5"/><circle cx="24" cy="26" r="3" fill="#4fc3f7"/></svg>
-      <span>Science Club</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('archaeology','Archaeology')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M8 30l12-12 10 10-12 12z" fill="none" stroke="#bcaaa4" stroke-width="2"/><path d="M20 18l12-12 8 8-12 12" fill="none" stroke="#8d6e63" stroke-width="2"/><circle cx="28" cy="12" r="3" fill="#a1887f"/><path d="M6 36l8 6m28-20l8 4" stroke="#bcaaa4" stroke-width="1.5"/></svg>
-      <span>Archaeology</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('settings','Settings')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="8" fill="none" stroke="#ccc" stroke-width="2"/><path d="M24 2v6m0 32v6M2 24h6m32 0h6M8.5 8.5l4.2 4.2m22.6 22.6l4.2 4.2m0-31.2l-4.2 4.2M12.7 39.5l-4.2 4.2" stroke="#ccc" stroke-width="2" stroke-linecap="round"/></svg>
-      <span>Settings</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('cv','CV')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="4" width="28" height="36" rx="3" fill="#1a1a2e" stroke="#fff" stroke-width="2"/><line x1="14" y1="12" x2="34" y2="12" stroke="#888" stroke-width="1.5"/><line x1="14" y1="18" x2="30" y2="18" stroke="#888" stroke-width="1.5"/><line x1="14" y1="24" x2="28" y2="24" stroke="#888" stroke-width="1.5"/><circle cx="36" cy="14" r="8" fill="none" stroke="#4fc3f7" stroke-width="1.5"/><path d="M32 14h8m-4-4v8" stroke="#4fc3f7" stroke-width="1.5"/></svg>
-      <span>CV</span>
-    </div>
-    <div class="icon" ondblclick="openWindow('tetris','Tetris')">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="16" height="16" rx="2" fill="#ef5350"/><rect x="22" y="4" width="16" height="16" rx="2" fill="#ffca28"/><rect x="4" y="22" width="16" height="16" rx="2" fill="#4fc3f7"/><rect x="22" y="22" width="16" height="16" rx="2" fill="#66bb6a"/><rect x="4" y="40" width="16" height="4" rx="2" fill="#ce93d8"/><rect x="22" y="40" width="7" height="4" rx="2" fill="#ffca28"/><rect x="31" y="40" width="7" height="4" rx="2" fill="#4fc3f7"/></svg>
-      <span>Tetris</span>
+  <div id="icon-grid"></div>
+  <div id="drag-clone"></div>
+  <div id="desktop-watermark">
+    <div id="desktop-portrait"><img src="media/portrait.png" alt=""></div>
+    <div>
+      <div id="desktop-title">Mr Chan's website</div>
+      <div id="desktop-role">Science and Computer Science teacher</div>
+      <div id="desktop-subtitle">click on the icons to learn more about me</div>
     </div>
   </div>
+  <div id="desktop-about-bar"><span>STEM teacher and department lead specialising in IGCSE Science &amp; Computer Science. Combines makerspace projects, real&#8209;world field research (UK archaeological dig), and student&#8209;led volunteering to foster deep learning. Has guided students to Grand Prize at PolyU Design Hatch and Top 10 HKAGE SEAM Award.</span></div>
+
   <div id="taskbar">
-    <div class="taskbar-btn" onclick="toggleStartMenu()" title="Start">
+    <div class="taskbar-btn" id="btn-start" title="Start">
       <svg viewBox="0 0 588.42 568.88" xmlns="http://www.w3.org/2000/svg"><path d="m10.5 177.038 20.675 1.532c21.44-24.249 29.864-95.974 156.213-81.935-4.595 307.32-139.367 339.737-130.943 402.784 3.063 35.735 31.395 57.687 62.025 58.963 96.74-3.318 92.4-133.751 122.52-462.513h124.818c-6.637 115.883-24.76 231.767-26.802 345.353 1.532 75.554 47.477 115.884 107.971 116.394 99.548 3.318 130.943-112.82 130.943-162.339h-21.44c-2.043 40.84-21.697 70.194-63.558 71.98-114.097 1.532-51.305-200.626-50.54-369.857l135.538.766-.765-86.53C13.807 8.908 85.312-2.137 10.5 177.038z"></path></svg>
     </div>
-    <div class="taskbar-btn" onclick="toggleSearch()" title="Type here to search">
+    <div class="taskbar-btn" id="btn-search" title="Type here to search">
       <svg viewBox="3 -1 30 30" xmlns="http://www.w3.org/2000/svg"><path d="M21 0q1.516 0 2.922.391T26.547 1.5t2.227 1.727 1.727 2.227 1.109 2.625.391 2.922-.391 2.922-1.109 2.625-1.727 2.227-2.227 1.727-2.625 1.109-2.922.391q-1.953 0-3.742-.656t-3.289-1.891L1.703 31.705q-.297.297-.703.297t-.703-.297T0 31.002t.297-.703l12.25-12.266q-1.234-1.5-1.891-3.289T10 11.002q0-1.516.391-2.922T11.5 5.455t1.727-2.227 2.227-1.727T18.079.392t2.922-.391zm0 20q1.859 0 3.5-.711t2.859-1.93 1.93-2.859T30 11t-.711-3.5-1.93-2.859-2.859-1.93T21 2t-3.5.711-2.859 1.93-1.93 2.859T12 11t.711 3.5 1.93 2.859 2.859 1.93T21 20z"></path></svg>
     </div>
     <div id="window-tabs"></div>
-    <div id="tray"><span id="clock"></span></div>
-  </div>
-  <div id="fact-widget" onclick="if(this.classList.contains('minimized'))toggleFactWidget()">
-    <div class="fact-header">
-      <span class="fact-label">Daily Fact</span>
-      <button class="fact-btn" onclick="toggleFactWidget();event.stopPropagation()" title="Minimize">&#x2013;</button>
+    <div id="tray">
+      <canvas id="clock-canvas" width="36" height="22"></canvas>
+      <span id="clock-text"></span>
     </div>
-    <div class="fact-text" id="fact-text"></div>
-    <button class="fact-next" onclick="nextFact()">&#x21BB; Next Fact</button>
+  </div>
+  <div id="slideshow-widget" onclick="if(this.classList.contains('minimized'))Gamify.toggleSlideshowWidget()">
+    <div class="ss-header">
+      <span class="ss-label">Teaching Moments</span>
+      <button class="ss-btn ss-btn-min" onclick="Gamify.toggleSlideshowWidget();event.stopPropagation()" title="Minimize">&#x2013;</button>
+    </div>
+    <div class="ss-body">
+      <div class="ss-image-wrap">
+        <img id="slide-img" src="media/slideshow/slide_00_processed_IMG_8960.jpg" alt="">
+      </div>
+      <div class="ss-caption" id="slide-caption"></div>
+      <div class="ss-controls">
+        <button class="ss-nav" onclick="Gamify.prevSlide();event.stopPropagation()" title="Previous">&#x25C0;</button>
+        <button class="ss-nav" id="slide-pause" onclick="Gamify.togglePause();event.stopPropagation()" title="Pause">&#x23F8;</button>
+        <span class="ss-counter" id="slide-counter">1/20</span>
+        <button class="ss-nav" onclick="Gamify.nextSlide();event.stopPropagation()" title="Next">&#x25B6;</button>
+        <button class="ss-nav ss-btn-min" onclick="Gamify.toggleSlideshowWidget();event.stopPropagation()" title="Minimize">&#x2013;</button>
+      </div>
+    </div>
   </div>
 </div>
+
 <div id="start-menu">
-  <div style="display:flex;flex:1;min-height:0">
-    <div class="start-sidebar"><span>Science Portfolio</span></div>
-    <div class="start-content">
-      <div class="start-item" onclick="openWindow('welcome','Welcome');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><path d="M6 10h14l4 4h18a3 3 0 013 3v20a3 3 0 01-3 3H6a3 3 0 01-3-3V13a3 3 0 013-3z" fill="none" stroke="#ffd700" stroke-width="2"/></svg>Welcome</div>
-      <div class="start-item" onclick="openWindow('chemistry','Chemistry');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><path d="M17 2h14v16l10 20H7l10-20V2z" fill="none" stroke="#4fc3f7" stroke-width="2"/></svg>Chemistry</div>
-      <div class="start-item" onclick="openWindow('biology','Biology');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><path d="M14 6c4 6 4 30 20 36M34 6c-4 6-4 30-20 36" fill="none" stroke="#66bb6a" stroke-width="2"/></svg>Biology</div>
-      <div class="start-item" onclick="openWindow('physics','Physics');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><circle cx="24" cy="24" r="6" fill="#ff7043"/><ellipse cx="24" cy="24" rx="20" ry="7" fill="none" stroke="#ffab91" stroke-width="1.5" transform="rotate(0 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="7" fill="none" stroke="#ffab91" stroke-width="1.5" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="7" fill="none" stroke="#ffab91" stroke-width="1.5" transform="rotate(-60 24 24)"/></svg>Physics</div>
-      <div style="border-top:1px solid #444;margin:6px 8px"></div>
-      <div class="start-item" onclick="openWindow('field-trips','Field Trips');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="#ffca28" stroke-width="2"/><polygon points="24,6 28,28 20,28" fill="#ffca28"/></svg>Field Trips</div>
-      <div class="start-item" onclick="openWindow('lab-activities','Lab Activities');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><rect x="6" y="16" width="8" height="22" rx="1" fill="none" stroke="#ce93d8" stroke-width="2"/><rect x="14" y="10" width="16" height="20" rx="2" fill="none" stroke="#ce93d8" stroke-width="2"/></svg>Lab Activities</div>
-      <div class="start-item" onclick="openWindow('science-club','Science Club');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><path d="M24 2l-6 18h12L24 2z" fill="#ef5350"/><rect x="19" y="18" width="10" height="16" rx="2" fill="#e57373" stroke="#c62828" stroke-width="1"/></svg>Science Club</div>
-      <div class="start-item" onclick="openWindow('archaeology','Archaeology');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><path d="M8 30l12-12 10 10-12 12z" fill="none" stroke="#bcaaa4" stroke-width="2"/><path d="M20 18l12-12 8 8-12 12" fill="none" stroke="#8d6e63" stroke-width="2"/></svg>Archaeology</div>
-      <div class="start-item" onclick="openWindow('cv','CV');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><rect x="6" y="4" width="28" height="36" rx="3" fill="#1a1a2e" stroke="#fff" stroke-width="2"/><line x1="14" y1="12" x2="34" y2="12" stroke="#888" stroke-width="1.5"/></svg>CV</div>
-      <div style="border-top:1px solid #444;margin:6px 8px"></div>
-      <div class="start-item" onclick="openWindow('computer','This PC');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><rect x="4" y="6" width="40" height="28" rx="3" fill="none" stroke="#fff" stroke-width="2"/></svg>This PC</div>
-      <div class="start-item" onclick="openWindow('files','File Explorer');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><path d="M6 10h14l4 4h18a3 3 0 013 3v20a3 3 0 01-3 3H6a3 3 0 01-3-3V13a3 3 0 013-3z" fill="none" stroke="#ffd700" stroke-width="2"/></svg>File Explorer</div>
-      <div class="start-item" onclick="openWindow('browser','Browser');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="#4fc3f7" stroke-width="2"/></svg>Browser</div>
-      <div class="start-item" onclick="openWindow('terminal','Terminal');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><rect x="4" y="6" width="40" height="32" rx="4" fill="#1a1a2e" stroke="#fff" stroke-width="2"/></svg>Terminal</div>
-      <div class="start-item" onclick="openWindow('settings','Settings');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><circle cx="24" cy="24" r="8" fill="none" stroke="#ccc" stroke-width="2"/></svg>Settings</div>
-      <div style="border-top:1px solid #444;margin:6px 8px"></div>
-      <div class="start-item" onclick="openWindow('tetris','Tetris');closeStartMenu()"><svg width="24" height="24" viewBox="0 0 48 48"><rect x="6" y="6" width="16" height="16" rx="2" fill="#ef5350"/><rect x="24" y="6" width="16" height="16" rx="2" fill="#ffca28"/><rect x="6" y="24" width="16" height="16" rx="2" fill="#4fc3f7"/><rect x="24" y="24" width="16" height="16" rx="2" fill="#66bb6a"/></svg>Tetris</div>
-      <div style="border-top:1px solid #444;margin:6px 8px"></div>
-      <div class="start-item" onclick="clearSession()" style="color:#f44336">Power</div>
-    </div>
-  </div>
-</div>
-<div class="search-box" id="search-box">
-  <input id="search-input" placeholder="Type here to search" oninput="doSearch()" onkeydown="if(event.key==='Escape')toggleSearch()">
-  <div class="search-results" id="search-results"></div>
+  <div class="start-sidebar"><span>Science Portfolio</span></div>
+  <div class="start-list" id="start-list"></div>
 </div>
 
-<script>
-const apps = {
-  computer:{title:'This PC',icon:'pc',body:'<div style="display:flex;flex-wrap:wrap;gap:16px"><div style="text-align:center"><svg width="48" height="48" viewBox="0 0 48 48"><rect x="4" y="6" width="40" height="28" rx="3" fill="none" stroke="#4fc3f7" stroke-width="2"/><rect x="18" y="34" width="12" height="3" fill="#4fc3f7"/></svg><div style="color:#fff;font-size:11px;margin-top:4px">Local Disk (C:)</div></div><div style="text-align:center"><svg width="48" height="48" viewBox="0 0 48 48"><rect x="4" y="6" width="40" height="32" rx="4" fill="#1a1a2e" stroke="#4fc3f7" stroke-width="2"/></svg><div style="color:#fff;font-size:11px;margin-top:4px">System</div></div></div>'},
-  files:{title:'File Explorer',icon:'folder',body:'<div style="color:#888;font-size:13px;line-height:2">📁 Documents<br>📁 Pictures<br>📁 Music<br>📁 Videos<br>📁 Downloads<br>📄 README.md</div>'},
-  browser:{title:'Browser',icon:'globe',body:'<div style="display:flex;align-items:center;gap:8px;padding:6px;background:#333;border-radius:6px;margin-bottom:12px"><span style="color:#888">🔒</span><input style="flex:1;background:none;border:none;color:#fff;font-size:13px;outline:0" value="https://science-portfolio.local" readonly></div><div style="text-align:center;padding:40px;color:#888;font-size:14px">Science Portfolio — Desktop Environment</div>'},
-  terminal:{title:'Terminal',icon:'terminal',body:'<div style="font-family:Consolas,monospace;color:#0f0;font-size:13px;line-height:1.6">Science Portfolio [Version 1.0]<br>(c) Science Educator. All rights reserved.<br><br>C:\\Users\\Teacher&gt; <span style="animation:blink 1s infinite">_</span></div>'},
-  settings:{title:'Settings',icon:'gear',body:'<div style="color:#ccc;line-height:2.2"><h3 style="color:#fff;margin-bottom:8px">System Settings</h3><div style="padding:8px 0;border-bottom:1px solid #333;display:flex;justify-content:space-between"><span>Display</span><span style="color:#888">1920 x 1080</span></div><div style="padding:8px 0;border-bottom:1px solid #333;display:flex;justify-content:space-between"><span>Theme</span><span style="color:#888">Dark</span></div><div style="padding:8px 0;border-bottom:1px solid #333;display:flex;justify-content:space-between"><span>Background</span><span style="color:#888">Gradient</span></div><div style="padding:8px 0;border-bottom:1px solid #333;display:flex;justify-content:space-between"><span>Clock Source</span><span style="color:#888">Local</span></div></div>'},
+<div id="search-box">
+  <input id="search-input" placeholder="Type here to search">
+  <div id="search-results"></div>
+</div>
 
-  /* Science Portfolio Apps */
-  welcome:{title:'Welcome',icon:'folder',body:'<div style="color:#ccc;line-height:2"><h2 style="color:#4fc3f7;font-size:20px;margin-bottom:12px">Welcome</h2><p style="margin-bottom:16px;font-size:13px">I am a passionate science educator dedicated to sparking curiosity and critical thinking in students. With experience teaching chemistry, biology, and physics, I believe hands-on learning—whether in the lab or on field trips—is the key to understanding the natural world. This portfolio showcases highlights from my classroom, lab activities, and the Science Club.</p><h3 style="color:#ffd700;font-size:15px;margin-bottom:8px">Explore</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'+['Chemistry|#4fc3f7|Reactions, bonding, and the periodic table','Biology|#66bb6a|Cells, ecosystems, genetics, and life','Physics|#ff7043|Forces, energy, waves, and the universe','Field Trips|#ffca28|Learning beyond the classroom walls','Lab Activities|#ce93d8|Hands-on experiments and investigations','Science Club|#ef5350|After-school projects and competitions','Archaeology|#bcaaa4|Uncovering the past through discovery','CV|#fff|Education, experience, and skills'].map(function(t){var p=t.split("|");return \'<div style="padding:8px;background:#2a2a3e;border-radius:4px;cursor:default" onclick="window.openWindow(\\\'\'+p[0].toLowerCase().replace(" ","-")+\'\\\',\\\'\'+p[0]+\'\\\')"><div style="color:\'+p[1]+\';font-size:13px">\'+p[0]+\'</div><div style="font-size:11px;color:#888">\'+p[2]+\'</div></div>\';}).join('')+'</div></div>'},
+<div id="context-menu"></div>
+<div id="calendar-popup"></div>
 
-  chemistry:{title:'Chemistry',icon:'flask',body:'<div style="color:#ccc;line-height:2"><h2 style="color:#4fc3f7;font-size:18px;margin-bottom:8px">Chemistry</h2><p style="margin-bottom:12px;font-size:13px">Chemistry is the study of matter—what substances are made of, how they interact, and how they change. My classroom explores everything from atomic structure to organic reactions through theory and hands-on experimentation.</p><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Key Topics</h3><ul style="list-style:disc;padding-left:20px;margin-bottom:12px;font-size:13px"><li>Atomic structure and the periodic table</li><li>Chemical bonding and molecular geometry</li><li>Stoichiometry and reaction balancing</li><li>Acids, bases, and pH</li><li>Thermochemistry and reaction rates</li><li>Introduction to organic chemistry</li></ul><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Lab Highlights</h3><p style="font-size:13px;font-style:italic;color:#aaa;margin-bottom:8px">"Tell me and I forget. Teach me and I remember. Involve me and I learn." — Benjamin Franklin</p><ul style="list-style:disc;padding-left:20px;font-size:13px"><li><b>Titration labs</b> — determining unknown concentrations</li><li><b>Flame tests</b> — identifying metal ions by color</li><li><b>Synthesis of esters</b> — making pleasant-smelling compounds</li><li><b>Electrolysis of water</b> — splitting water into hydrogen and oxygen</li></ul></div>'},
-
-  biology:{title:'Biology',icon:'dna',body:'<div style="color:#ccc;line-height:2"><h2 style="color:#66bb6a;font-size:18px;margin-bottom:8px">Biology</h2><p style="margin-bottom:12px;font-size:13px">Biology is the study of life in all its forms—from microscopic cells to vast ecosystems. My courses guide students through the complexity and beauty of living systems.</p><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Key Topics</h3><ul style="list-style:disc;padding-left:20px;margin-bottom:12px;font-size:13px"><li><b>Cell biology</b> — structure, function, and cellular respiration</li><li><b>Genetics</b> — DNA, inheritance patterns, and gene expression</li><li><b>Evolution</b> — natural selection, adaptation, and speciation</li><li><b>Ecology</b> — ecosystems, food webs, and environmental science</li><li><b>Human anatomy</b> — organ systems and physiology</li></ul><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Hands-On Learning</h3><p style="font-size:13px"><b>Microscopy Labs</b> — Onion root tip mitosis, pond water microorganisms, leaf stomata and chloroplasts.</p><p style="font-size:13px"><b>Field Studies</b> — Biodiversity surveys on school grounds, identifying plant and animal species.</p><p style="font-size:13px"><b>Dissections</b> — Frog, earthworm, and flower dissections for tangible anatomy understanding.</p></div>'},
-
-  physics:{title:'Physics',icon:'atom',body:'<div style="color:#ccc;line-height:2"><h2 style="color:#ff7043;font-size:18px;margin-bottom:8px">Physics</h2><p style="margin-bottom:12px;font-size:13px">Physics explores the fundamental principles that govern the universe—from the smallest particles to the largest galaxies. My classroom develops problem-solving skills and deep understanding of how the world works.</p><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Curriculum</h3><ul style="list-style:disc;padding-left:20px;margin-bottom:12px;font-size:13px"><li><b>Mechanics</b> — motion, forces, energy, and momentum</li><li><b>Waves and optics</b> — sound, light, reflection, and refraction</li><li><b>Electricity and magnetism</b> — circuits, fields, and electromagnetism</li><li><b>Thermodynamics</b> — heat, temperature, and energy transfer</li><li><b>Modern physics</b> — relativity and quantum concepts (introductory)</li></ul><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Demonstration Highlights</h3><ul style="list-style:disc;padding-left:20px;font-size:13px"><li>Egg drop challenge — applying impulse and momentum concepts</li><li>Standing wave demonstrations — using ropes and Chladni plates</li><li>Van de Graaff generator — exploring static electricity</li><li>Pendulum and projectile motion — timing and predicting trajectories</li></ul></div>'},
-
-  'field-trips':{title:'Field Trips',icon:'compass',body:'<div style="color:#ccc;line-height:2"><h2 style="color:#ffca28;font-size:18px;margin-bottom:8px">Field Trips</h2><p style="margin-bottom:12px;font-size:13px">Field trips transform abstract concepts into tangible experiences. Taking students beyond the classroom walls allows them to see science in action.</p><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Recent Trips</h3>'+['Natural History Museum|#ffca28|Students explored exhibits on evolution, geology, and biodiversity. The fossil hall connected directly to our biology unit on natural selection.','Water Treatment Plant|#ffca28|Chemistry and environmental science students toured the municipal water treatment facility, observing filtration and quality testing procedures firsthand.','University Physics Lab|#ffca28|Advanced students visited the university physics department, seeing research-grade equipment and speaking with graduate students about careers in science.','Botanical Gardens|#ffca28|Biology students documented plant adaptations and learned about conservation efforts at the regional botanical garden.'].map(function(t){var p=t.split("|");return \'<div style="padding:8px;background:#2a2a3e;border-radius:4px;margin-bottom:8px"><b style="color:\'+p[1]+\'">\'+p[0]+\'</b><p style="font-size:12px;color:#aaa">\'+p[2]+\'</p></div>\';}).join('')+'</div>'},
-
-  'lab-activities':{title:'Lab Activities',icon:'microscope',body:'<div style="color:#ccc;line-height:2"><h2 style="color:#ce93d8;font-size:18px;margin-bottom:8px">Lab Activities</h2><p style="margin-bottom:12px;font-size:13px">The laboratory is where science comes alive. Lab activities are designed to build practical skills, reinforce theoretical concepts, and cultivate a spirit of inquiry and discovery.</p><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Safety First</h3><ul style="list-style:disc;padding-left:20px;margin-bottom:12px;font-size:13px"><li>Proper use of PPE (goggles, gloves, lab coats)</li><li>Safe handling of glassware, chemicals, and heating equipment</li><li>Emergency procedures and first-aid locations</li><li>Waste disposal guidelines</li></ul><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Featured Labs</h3>'+[{n:'Chemistry: Acid-Base Titration',c:'Determining unknown acid concentration using a standardized base and phenolphthalein indicator.'},{n:'Biology: Enzyme Activity',c:'Investigating the effect of temperature and pH on catalase activity using potato extracts.'},{n:'Physics: Ohm\'s Law Investigation',c:'Building circuits with resistors, measuring voltage and current, verifying Ohm\'s law through graphical analysis.'},{n:'Cross-Disciplinary: Water Quality',c:'Testing local water samples for pH, dissolved oxygen, nitrates, and turbidity.'}].map(function(t){return \'<div style="padding:8px;background:#2a2a3e;border-radius:4px;margin-bottom:6px"><b style="color:#ce93d8">\'+t.n+\'</b><p style="font-size:12px;color:#aaa">\'+t.c+\'</p></div>\';}).join('')+'</div>'},
-
-  'science-club':{title:'Science Club',icon:'rocket',body:'<div style="color:#ccc;line-height:2"><h2 style="color:#ef5350;font-size:18px;margin-bottom:8px">Science Club</h2><p style="margin-bottom:12px;font-size:13px">The Science Club is an after-school program for students who want to explore science beyond the curriculum. It\'s a space for creativity, competition, and collaboration.</p><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Mission</h3><p style="margin-bottom:12px;font-size:13px">To provide a welcoming environment where any student, regardless of background, can discover the joy of scientific exploration and develop teamwork and leadership skills.</p><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Activities</h3><ul style="list-style:disc;padding-left:20px;margin-bottom:12px;font-size:13px"><li><b>Science Fair Preparation</b> — Mentoring for project development and presentation skills</li><li><b>STEM Challenges</b> — Bridge building, water rockets, solar ovens, egg drop vehicles</li><li><b>Guest Speakers</b> — Marine biologist, chemical engineer, science journalist</li><li><b>Citizen Science</b> — Bird population surveys, light pollution monitoring</li></ul><div style="padding:8px;background:#3a1a1a;border-radius:4px;border:1px solid #c62828;text-align:center"><b style="color:#ef5350">Join us every Thursday after school in Room 204!</b><p style="font-size:12px;color:#e57373">All students welcome — no prior experience needed, just curiosity.</p></div></div>'},
-
-  archaeology:{title:'Archaeology',icon:'trowel',body:'<div style="color:#ccc;line-height:2"><h2 style="color:#bcaaa4;font-size:18px;margin-bottom:8px">Archaeology</h2><p style="margin-bottom:12px;font-size:13px">Archaeology brings history to life by uncovering the physical traces of past civilizations. Through hands-on fieldwork, students learn how scientists piece together human history.</p><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">Pennyhooks Archaeology</h3><p style="font-size:13px;margin-bottom:8px">Students participated in real archaeological investigation at Pennyhooks, working alongside professional archaeologists:</p><ul style="list-style:disc;padding-left:20px;margin-bottom:12px;font-size:13px"><li><b>Site surveying</b> — mapping and documenting the excavation area</li><li><b>Stratigraphy observation</b> — reading soil layers for chronological sequences</li><li><b>Artefact recovery</b> — careful excavation, recording, and preservation</li><li><b>Post-excavation analysis</b> — cleaning, cataloguing, and interpreting finds</li></ul><h3 style="color:#ffd700;font-size:14px;margin-bottom:6px">What Students Learned</h3><ul style="list-style:disc;padding-left:20px;font-size:13px"><li>Scientific method in practice — hypotheses about site usage</li><li>Interdisciplinary connections — chemistry, biology, and physics in archaeology</li><li>Patience and precision — meticulous attention to detail</li><li>Teamwork — collaborative efforts where every role matters</li></ul></div>'},
-
-  cv:{title:'CV',icon:'cv',body:'<div style="color:#ccc;line-height:2"><h2 style="color:#fff;font-size:18px;margin-bottom:4px">Curriculum Vitae</h2><p style="color:#888;font-size:13px;margin-bottom:16px">Science Educator</p><h3 style="color:#4fc3f7;font-size:14px;margin-bottom:6px;border-bottom:1px solid #333;padding-bottom:4px">Education</h3><div style="margin-bottom:8px"><b>Master of Science in Education</b><br><span style="color:#888;font-size:12px">Specialization in science curriculum development and inquiry-based pedagogy.</span></div><div style="margin-bottom:12px"><b>Bachelor of Science in Chemistry</b><br><span style="color:#888;font-size:12px">Minor in biology. Graduated with honors.</span></div><h3 style="color:#4fc3f7;font-size:14px;margin-bottom:6px;border-bottom:1px solid #333;padding-bottom:4px">Teaching Experience</h3><div style="margin-bottom:8px"><b>Science Teacher</b><br><span style="color:#888;font-size:12px">Teach chemistry, biology, and physics to grades 9–12. Develop inquiry-based lab curricula. Advisor for the Science Club and coordinator for annual science fair participation.</span></div><div style="margin-bottom:12px"><b>Student Teacher</b><br><span style="color:#888;font-size:12px">Completed teaching practicum in chemistry and general science. Designed lesson plans and led classroom instruction.</span></div><h3 style="color:#4fc3f7;font-size:14px;margin-bottom:6px;border-bottom:1px solid #333;padding-bottom:4px">Certifications</h3><div style="margin-bottom:4px"><b>State Teaching License — Secondary Science</b><br><span style="color:#888;font-size:12px">Certified in chemistry, biology, and general science (grades 7–12)</span></div><div style="margin-bottom:12px"><b>Laboratory Safety Certification</b><br><span style="color:#888;font-size:12px">Certified in chemical hygiene, lab safety management, and hazardous material handling</span></div><h3 style="color:#4fc3f7;font-size:14px;margin-bottom:6px;border-bottom:1px solid #333;padding-bottom:4px">Contact</h3><p style="font-size:13px"><b>Email:</b> <a href="mailto:teacher@example.com" style="color:#4fc3f7">teacher@example.com</a></p></div>'}
-  tetris:{title:'Tetris',icon:'game',body:'<div id="tetris-container"><canvas id="tetris-board"></canvas><div id="tetris-side"><div style="color:#888;font-size:10px;text-transform:uppercase;margin-bottom:2px">NEXT</div><canvas id="tetris-next" style="margin-bottom:10px"></canvas><div style="color:#888;font-size:10px;text-transform:uppercase;margin-bottom:2px">SCORE</div><div id="tetris-score" style="color:#4fc3f7;font-size:18px;font-weight:600;margin-bottom:8px">0</div><div style="color:#888;font-size:10px;text-transform:uppercase;margin-bottom:2px">LINES</div><div id="tetris-lines" style="color:#ffd700;font-size:16px;margin-bottom:8px">0</div><div style="color:#888;font-size:10px;text-transform:uppercase;margin-bottom:2px">LEVEL</div><div id="tetris-level" style="color:#66bb6a;font-size:16px">1</div></div><div id="tetris-overlay"><div id="tetris-msg">GAME OVER</div><div id="tetris-score-final"></div><button id="tetris-restart" onclick="TetrisGame.reset()">Play Again</button><div id="tetris-pause-hint"></div></div><div id="tetris-controls">Arrow Keys Move | Up Rotate | Down Soft Drop | Space Hard Drop | P Pause</div></div>'},
-};
-let windows = {};
-let zIndex = 10;
-let startMenuOpen = false;
-let searchOpen = false;
-
-function openWindow(id,title){
-  if(windows[id]){
-    bringToFront(id,'window-'+id);
-  }else{
-    const win = document.createElement('div');
-    win.className = 'window focused';
-    win.id = 'window-'+id;
-    win.style.zIndex = ++zIndex;
-    const l = 100 + Object.keys(windows).length*30;
-    const t = 40 + Object.keys(windows).length*30;
-    win.style.left = l+'px';
-    win.style.top = t+'px';
-    win.style.width = '500px';
-    win.style.height = '350px';
-    const subj = ['welcome','chemistry','biology','physics','field-trips','lab-activities','science-club','archaeology','cv'];
-    const isSubj = subj.includes(id);
-    const prog = isSubj ? `<div class="progress-bar"><div class="fill" id="prog-${id}"></div></div>` : '';
-    win.innerHTML = `<div class="window-titlebar" onmousedown="startDrag(event,'window-${id}')">
-      <span>${title}</span>
-      <button onclick="minimizeWindow('${id}')">&#x2013;</button>
-      <button onclick="maximizeWindow('window-${id}')">&#x25A1;</button>
-      <button class="close" onclick="closeWindow('${id}')">&#x2715;</button>
-    </div><div class="window-body">${prog}${apps[id]?apps[id].body:''}</div>`;
-    document.getElementById('desktop').appendChild(win);
-    windows[id] = true;
-    makeWindowResizable('window-'+id);
-    if(id==='tetris'){
-      win.querySelector('.window-body').style.overflow='hidden';
-      win.style.width='420px';
-      win.style.height='640px';
-      initTetris();
-    }
-    if(isSubj) initProgress(id);
-  }
-  addTab(id,title);
-}
-
-function addTab(id,title){
-  const tabs = document.getElementById('window-tabs');
-  let existing = document.getElementById('tab-'+id);
-  if(existing) existing.classList.add('active');
-  else{
-    const tab = document.createElement('div');
-    tab.className = 'window-tab active';
-    tab.id = 'tab-'+id;
-    tab.textContent = title;
-    tab.onclick = function(e){
-      e.stopPropagation();
-      if(document.getElementById('window-'+id)){
-        bringToFront(id,'window-'+id);
-      }else openWindow(id,title);
-    };
-    tabs.appendChild(tab);
-  }
-  document.querySelectorAll('.window-tab').forEach(t=>t.classList.remove('active'));
-  (existing||document.getElementById('tab-'+id)).classList.add('active');
-}
-
-function bringToFront(id,winId){
-  const win = document.getElementById(winId);
-  if(win){win.style.zIndex=++zIndex;win.classList.add('focused')}
-  document.querySelectorAll('.window').forEach(w=>{if(w.id!==winId)w.classList.remove('focused')});
-  document.querySelectorAll('.window-tab').forEach(t=>t.classList.remove('active'));
-  const tab=document.getElementById('tab-'+id);
-  if(tab)tab.classList.add('active');
-}
-
-function minimizeWindow(id){
-  const win = document.getElementById('window-'+id);
-  if(win) win.style.display = 'none';
-}
-function closeWindow(id){
-  if(id==='tetris') stopTetris();
-  const win = document.getElementById('window-'+id);
-  const tab = document.getElementById('tab-'+id);
-  if(win) win.remove();
-  if(tab) tab.remove();
-  delete windows[id];
-}
-function maximizeWindow(winId){
-  const win = document.getElementById(winId);
-  if(!win)return;
-  if(win.style.width==='100%'){
-    win.style.left='100px';win.style.top='40px';win.style.width='500px';win.style.height='350px';
-  }else{
-    win.style.left='0';win.style.top='0';win.style.width='100%';win.style.height='calc(100% - 30px)';
-  }
-}
-function startDrag(e,winId){
-  const win=document.getElementById(winId);
-  if(!win||e.target.tagName!=='DIV'||!e.target.className.includes('window-titlebar'))return;
-  const rect=win.getBoundingClientRect();
-  const ox=e.clientX-rect.left,oy=e.clientY-rect.top;
-  bringToFront(winId.replace('window-',''),winId);
-  function move(ev){
-    win.style.left=Math.max(0,Math.min(window.innerWidth-rect.width,ev.clientX-ox))+'px';
-    win.style.top=Math.max(0,Math.min(window.innerHeight-30-rect.height,ev.clientY-oy))+'px';
-  }
-  function up(){document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up)}
-  document.addEventListener('mousemove',move);
-  document.addEventListener('mouseup',up);
-}
-function makeWindowResizable(winId){
-  const win=document.getElementById(winId);
-  if(!win)return;
-  const handle=document.createElement('div');
-  handle.style.cssText='position:absolute;right:0;bottom:0;width:12px;height:12px;cursor:nwse-resize;background:transparent';
-  handle.onmousedown=function(e){
-    e.stopPropagation();
-    const r=win.getBoundingClientRect();
-    const ow=e.clientX-r.width,oh=e.clientY-r.height;
-    function move(ev){
-      win.style.width=Math.max(300,ev.clientX-r.left)+'px';
-      win.style.height=Math.max(200,ev.clientY-r.top)+'px';
-    }
-    function up(){document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up)}
-    document.addEventListener('mousemove',move);
-    document.addEventListener('mouseup',up);
-  };
-  win.appendChild(handle);
-  win.addEventListener('mousedown',function(){bringToFront(winId.replace('window-',''),winId)});
-}
-
-function toggleStartMenu(){
-  startMenuOpen=!startMenuOpen;
-  document.getElementById('start-menu').classList.toggle('open',startMenuOpen);
-  document.getElementById('overlay').classList.toggle('open',startMenuOpen);
-}
-function closeStartMenu(){
-  startMenuOpen=false;
-  document.getElementById('start-menu').classList.remove('open');
-  document.getElementById('overlay').classList.remove('open');
-}
-function toggleSearch(){
-  searchOpen=!searchOpen;
-  document.getElementById('search-box').classList.toggle('open',searchOpen);
-  if(searchOpen) document.getElementById('search-input').focus();
-}
-function doSearch(){
-  const q = document.getElementById('search-input').value.toLowerCase().trim();
-  const results = document.getElementById('search-results');
-  if(!q){results.innerHTML='';return}
-  const matches = Object.entries(apps).filter(function(e){return e[1].title.toLowerCase().indexOf(q)!==-1});
-  results.innerHTML = matches.map(function(e){return '<div class="search-result" onclick="openWindow(\''+e[0]+'\',\''+e[1].title+'\');toggleSearch()">'+e[1].title+'</div>'}).join('');
-}
-
-function deselectAll(e){
-  if(e.target===document.getElementById('icons')){
-    document.querySelectorAll('.icon.selected').forEach(i=>i.classList.remove('selected'));
-  }
-}
-
-function clearSession(){
-  if(confirm('Clear all session data and reload?')){
-    localStorage.clear();
-    location.reload();
-  }
-}
-
-function drawClock(){
-  const now=new Date();
-  const h=now.getHours(),m=now.getMinutes();
-  const time=String(now.getHours()%12||12)+':'+String(now.getMinutes()).padStart(2,'0')+' '+(h>=12?'PM':'AM');
-  const date=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-  document.getElementById('clock').textContent=time;
-  document.getElementById('clock').title=date;
-}
-setInterval(drawClock,1000);
-drawClock();
-
-document.getElementById('icons').addEventListener('click',function(e){
-  const icon=e.target.closest('.icon');
-  if(icon){
-    document.querySelectorAll('.icon.selected').forEach(i=>i.classList.remove('selected'));
-    icon.classList.add('selected');
-  }
-});
-document.addEventListener('click',function(e){
-  if(!e.target.closest('#start-menu')&&!e.target.closest('.taskbar-btn')){
-    closeStartMenu();
-  }
-  if(!e.target.closest('#search-box')&&!e.target.closest('.taskbar-btn')){
-    document.getElementById('search-box').classList.remove('open');
-    searchOpen=false;
-  }
-});
-// Particle animation
-const canvas=document.getElementById('particles-canvas');
-const ctx=canvas.getContext('2d');
-let particles=[];
-const PC=22;
-function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight-30}
-resizeCanvas();window.addEventListener('resize',resizeCanvas);
-function spawnParticle(){
-  const t=['atom','molecule','dna'][Math.floor(Math.random()*3)];
-  const h=['hsla(207,100%,72%,0.13)','hsla(280,100%,72%,0.10)','hsla(150,60%,60%,0.10)','hsla(40,100%,65%,0.10)'][Math.floor(Math.random()*4)];
-  return{x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-0.5)*0.25,vy:(Math.random()-0.5)*0.25,type:t,size:14+Math.random()*22,color:h,angle:Math.random()*Math.PI*2}
-}
-for(let i=0;i<PC;i++)particles.push(spawnParticle());
-function drawAtom(p,tm){
-  ctx.beginPath();ctx.arc(p.x,p.y,p.size*0.3,0,Math.PI*2);ctx.fillStyle=p.color;ctx.fill();
-  for(let i=0;i<3;i++){
-    const a=tm*0.001+(i*Math.PI*2)/3;
-    const ex=p.x+Math.cos(a)*p.size*0.55,ey=p.y+Math.sin(a)*p.size*0.55*0.5;
-    ctx.beginPath();ctx.arc(ex,ey,1.5,0,Math.PI*2);ctx.fillStyle=p.color;ctx.fill()
-  }
-}
-function drawMolecule(p){
-  const r=p.size*0.2;
-  const pos=[[-r,0],[r,0],[0,r*0.7]];
-  ctx.fillStyle=p.color;
-  pos.forEach(function(pt){ctx.beginPath();ctx.arc(p.x+pt[0],p.y+pt[1],r*0.7,0,Math.PI*2);ctx.fill()});
-  ctx.beginPath();ctx.moveTo(p.x+pos[0][0],p.y+pos[0][1]);
-  ctx.lineTo(p.x+pos[1][0],p.y+pos[1][1]);ctx.lineTo(p.x+pos[2][0],p.y+pos[2][1]);
-  ctx.strokeStyle=p.color;ctx.lineWidth=1;ctx.stroke()
-}
-function drawDNA(p,tm){
-  const wf=0.08,wa=p.size*0.28,seg=8,sl=p.size*2.2/seg;
-  for(let s=0;s<2;s++){
-    ctx.beginPath();ctx.strokeStyle=p.color;ctx.lineWidth=1.2;
-    const off=s===0?-p.size*0.14:p.size*0.14;
-    for(let i=0;i<=seg;i++){
-      const py=p.y-p.size+i*sl;
-      const px=p.x+Math.sin(py*wf+tm*0.0004+s*Math.PI)*wa+off;
-      if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py)
-    }
-    ctx.stroke()
-  }
-  for(let i=0;i<seg;i++){
-    const py=p.y-p.size+i*sl;
-    const x1=p.x+Math.sin(py*wf+tm*0.0004)*wa-p.size*0.14;
-    const x2=p.x+Math.sin(py*wf+tm*0.0004+Math.PI)*wa+p.size*0.14;
-    ctx.beginPath();ctx.moveTo(x1,py);ctx.lineTo(x2,py);
-    ctx.strokeStyle=p.color;ctx.lineWidth=0.8;ctx.stroke()
-  }
-}
-function animParticles(tm){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(function(p){
-    p.x+=p.vx;p.y+=p.vy;
-    if(p.x<-60){p.x=canvas.width+60;p.y=Math.random()*canvas.height}
-    if(p.x>canvas.width+60){p.x=-60;p.y=Math.random()*canvas.height}
-    if(p.y<-60){p.y=canvas.height+60;p.x=Math.random()*canvas.width}
-    if(p.y>canvas.height+60){p.y=-60;p.x=Math.random()*canvas.width}
-    if(p.type==='atom')drawAtom(p,tm);
-    else if(p.type==='molecule')drawMolecule(p);
-    else drawDNA(p,tm)
-  });
-  requestAnimationFrame(animParticles)
-}
-requestAnimationFrame(animParticles);
-
-// Progress bars
-function initProgress(id){
-  try{
-    const body=document.querySelector('#window-'+id+' .window-body');
-    if(!body)return;
-    const fill=document.getElementById('prog-'+id);
-    const saved=parseFloat(localStorage.getItem('prog_'+id)||'0');
-    if(fill)fill.style.width=saved+'%';
-    body.addEventListener('scroll',function(){
-      const pct=body.scrollHeight<=body.clientHeight?0:Math.round(body.scrollTop/(body.scrollHeight-body.clientHeight)*100);
-      if(fill)fill.style.width=pct+'%';
-      localStorage.setItem('prog_'+id,pct)
-    })
-  }catch(e){}
-}
-
-// Daily fact widget
-const facts=[
-  'Water is the only substance on Earth found naturally in all three states: solid, liquid, and gas.',
-  'A single teaspoon of a neutron star would weigh about 6 billion tons.',
-  'The human body contains enough carbon to make about 9,000 pencils.',
-  'Octopuses have three hearts, nine brains, and blue blood.',
-  'Light from the Sun takes about 8 minutes and 20 seconds to reach Earth.',
-  'There are more bacterial cells in your body than human cells.',
-  'Helium is the only element that cannot be solidified by cooling alone at normal pressure.',
-  'Bananas are slightly radioactive due to their potassium-40 content.',
-  'The Eiffel Tower can be 15 cm taller during summer due to thermal expansion.',
-  'A bolt of lightning contains enough energy to toast 100,000 slices of bread.',
-  'Honey never spoils — archaeologists found 3,000-year-old honey still edible in Egyptian tombs.',
-  'The average human body contains about 0.2 mg of gold.',
-  'Sound travels 4.3 times faster in water than in air.',
-  'Venus is the only planet in the Solar System to spin clockwise.',
-  'The DNA in a single human cell, if stretched out, would be about 2 meters long.',
-  'There are more stars in the universe than grains of sand on all of Earth\'s beaches.',
-  'A day on Venus is longer than a year on Venus.',
-  'Glass is actually a liquid that flows very, very slowly.',
-  'The largest living organism on Earth is a honey mushroom fungus spanning 3.8 km across.',
-  'Hot water freezes faster than cold water under certain conditions — this is the Mpemba effect.',
-  'A cockroach can live for several weeks without its head.',
-  'The Sun makes up 99.86% of the mass in the Solar System.',
-  'One cubic meter of air weighs about 1.2 kg at sea level.',
-  'Sharks have been around longer than trees — over 400 million years.',
-  'The human eye can distinguish about 10 million different colors.',
-  'When you crack a glow stick, you\'re witnessing chemiluminescence — light from a chemical reaction.',
-  'A day on Mars is only about 40 minutes longer than a day on Earth.',
-  'Tardigrades can survive in space, extreme radiation, and boiling temperatures.',
-  'The Amazon rainforest produces about 20% of the world\'s oxygen.',
-  'Your stomach acid is strong enough to dissolve razor blades.'
-];
-function showTodayFact(){
-  const d=new Date().getDate();
-  const idx=d%facts.length;
-  const el=document.getElementById('fact-text');
-  if(el)el.textContent=facts[idx]
-}
-function nextFact(){
-  const el=document.getElementById('fact-text');
-  if(el)el.textContent=facts[Math.floor(Math.random()*facts.length)]
-}
-function toggleFactWidget(){
-  const w=document.getElementById('fact-widget');
-  if(w){
-    w.classList.toggle('minimized');
-    const btn=w.querySelector('.fact-btn');
-    if(btn)btn.innerHTML=w.classList.contains('minimized')?'&#x2795;':'&#x2013;';
-  }
-}
-showTodayFact();
-
-// ─── Tetris ──────────────────────────────────────────────
-var TetrisGame = {
-  COLS:10, ROWS:20, B:28, PB:20,
-  colors:['#00e5ff','#ffeb3b','#aa00ff','#00e676','#ff1744','#2979ff','#ff9100'],
-  pieces:[
-    {shape:[[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],c:0},
-    {shape:[[1,1],[1,1]],c:1},
-    {shape:[[0,1,0],[1,1,1],[0,0,0]],c:2},
-    {shape:[[0,1,1],[1,1,0],[0,0,0]],c:3},
-    {shape:[[1,1,0],[0,1,1],[0,0,0]],c:4},
-    {shape:[[1,0,0],[1,1,1],[0,0,0]],c:5},
-    {shape:[[0,0,1],[1,1,1],[0,0,0]],c:6}
-  ],
-  scores:[100,300,500,800],
-  state:null, rafId:null, lastDrop:0, dropInterval:800,
-
-  init:function(){
-    this.state={board:Array.from({length:this.ROWS},function(){return new Array(10).fill(0)}),pieceIdx:-1,piece:null,px:0,py:0,nextIdx:-1,score:0,lines:0,level:1,gameOver:false,paused:false};
-    this.nextPiece();
-    this.spawnPiece();
-    this.updateUI();
-    document.getElementById('tetris-overlay').classList.remove('show');
-    this.lastDrop=performance.now();
-    this.dropInterval=800;
-    if(this.rafId){cancelAnimationFrame(this.rafId)}
-    this.rafId=requestAnimationFrame(this.loop.bind(this));
-  },
-
-  reset:function(){this.init()},
-
-  nextPiece:function(){
-    var n=this.state.nextIdx;
-    this.state.pieceIdx=n>=0?n:Math.floor(Math.random()*7);
-    this.state.piece=this.pieces[this.state.pieceIdx].shape;
-    this.state.nextIdx=Math.floor(Math.random()*7);
-  },
-
-  spawnPiece:function(){
-    this.nextPiece();
-    this.state.px=Math.floor((this.COLS-this.state.piece[0].length)/2);
-    this.state.py=0;
-    if(this.collides(this.state.piece,this.state.px,this.state.py))this.state.gameOver=true;
-  },
-
-  collides:function(s,ox,oy){
-    for(var r=0;r<s.length;r++)for(var c=0;c<s[r].length;c++){
-      if(!s[r][c])continue;
-      var x=ox+c,y=oy+r;
-      if(x<0||x>=this.COLS||y>=this.ROWS)return true;
-      if(y<0)continue;
-      if(this.state.board[y][x])return true;
-    }
-    return false;
-  },
-
-  move:function(dx,dy){
-    if(!this.collides(this.state.piece,this.state.px+dx,this.state.py+dy)){this.state.px+=dx;this.state.py+=dy;return true}
-    return false;
-  },
-
-  rotateCW:function(s){
-    var rows=s.length,cols=s[0].length,rot=[];
-    for(var c=0;c<cols;c++){rot[c]=[];for(var r=rows-1;r>=0;r--)rot[c][rows-1-r]=s[r][c]}
-    return rot;
-  },
-
-  tryRotate:function(){
-    if(this.state.pieceIdx===1)return;
-    var r=this.rotateCW(this.state.piece);
-    if(!this.collides(r,this.state.px,this.state.py)){this.state.piece=r;return}
-    var kicks=[-1,1,-2,2];
-    for(var i=0;i<kicks.length;i++){if(!this.collides(r,this.state.px+kicks[i],this.state.py)){this.state.piece=r;this.state.px+=kicks[i];return}}
-    if(!this.collides(r,this.state.px,this.state.py-1)){this.state.piece=r;this.state.py--}
-  },
-
-  hardDrop:function(){while(this.move(0,1)){}this.lock()},
-
-  lock:function(){
-    var s=this.state.piece;
-    for(var r=0;r<s.length;r++)for(var c=0;c<s[r].length;c++){
-      if(!s[r][c])continue;
-      var y=this.state.py+r,x=this.state.px+c;
-      if(y>=0&&y<this.ROWS&&x>=0&&x<this.COLS)this.state.board[y][x]=this.state.pieceIdx+1;
-    }
-    this.clearLines();
-    this.spawnPiece();
-    this.updateUI();
-  },
-
-  clearLines:function(){
-    var cl=0;
-    for(var r=this.ROWS-1;r>=0;r--){
-      if(this.state.board[r].every(function(v){return v!==0})){
-        this.state.board.splice(r,1);
-        this.state.board.unshift(new Array(this.COLS).fill(0));
-        cl++;r++;
-      }
-    }
-    if(cl>0){
-      this.state.lines+=cl;
-      this.state.score+=this.scores[cl-1]*this.state.level;
-      this.state.level=Math.floor(this.state.lines/10)+1;
-      this.dropInterval=Math.max(50,800-(this.state.level-1)*70);
-    }
-  },
-
-  updateUI:function(){
-    var se=document.getElementById('tetris-score'),le=document.getElementById('tetris-lines'),ve=document.getElementById('tetris-level');
-    if(se)se.textContent=this.state.score;
-    if(le)le.textContent=this.state.lines;
-    if(ve)ve.textContent=this.state.level;
-    this.drawPreview();
-    this.drawBoard();
-    if(this.state.gameOver){
-      var ov=document.getElementById('tetris-overlay'),sf=document.getElementById('tetris-score-final'),ph=document.getElementById('tetris-pause-hint'),ms=document.getElementById('tetris-msg'),rb=document.getElementById('tetris-restart');
-      if(ov)ov.classList.add('show');
-      if(ms)ms.textContent='GAME OVER';
-      if(sf)sf.textContent='Final Score: '+this.state.score;
-      if(ph)ph.textContent='';
-      if(rb)rb.style.display='';
-    }
-  },
-
-  updatePauseUI:function(){
-    var ov=document.getElementById('tetris-overlay'),ms=document.getElementById('tetris-msg'),sf=document.getElementById('tetris-score-final'),ph=document.getElementById('tetris-pause-hint'),rb=document.getElementById('tetris-restart');
-    if(this.state.paused){
-      if(ov)ov.classList.add('show');
-      if(ms)ms.textContent='PAUSED';
-      if(sf)sf.textContent='';
-      if(ph)ph.textContent='Press P to resume';
-      if(rb)rb.style.display='none';
-    }else{
-      if(ov)ov.classList.remove('show');
-      this.lastDrop=performance.now();
-    }
-  },
-
-  drawBlock:function(ctx,x,y,s,color){
-    ctx.fillStyle=color;
-    ctx.fillRect(x+1,y+1,s-2,s-2);
-    ctx.fillStyle='rgba(255,255,255,0.28)';
-    ctx.fillRect(x+1,y+1,s-2,3);
-    ctx.fillRect(x+1,y+1,3,s-2);
-    ctx.fillStyle='rgba(0,0,0,0.28)';
-    ctx.fillRect(x+1,y+s-4,s-2,3);
-    ctx.fillRect(x+s-4,y+1,3,s-2);
-  },
-
-  drawBoard:function(){
-    var cv=document.getElementById('tetris-board');
-    if(!cv)return;
-    var ctx=cv.getContext('2d'),b=this.B,w=this.COLS*b,h=this.ROWS*b;
-    cv.width=w;cv.height=h;
-    ctx.fillStyle='#111122';
-    ctx.fillRect(0,0,w,h);
-    ctx.strokeStyle='#222244';ctx.lineWidth=0.5;
-    for(var r=0;r<this.ROWS;r++)for(var c=0;c<this.COLS;c++)ctx.strokeRect(c*b,r*b,b,b);
-    for(var r=0;r<this.ROWS;r++)for(var c=0;c<this.COLS;c++)if(this.state.board[r][c])this.drawBlock(ctx,c*b,r*b,b,this.colors[this.state.board[r][c]-1]);
-    if(!this.state.gameOver&&this.state.piece){
-      var gy=this.state.py;
-      while(!this.collides(this.state.piece,this.state.px,gy+1))gy++;
-      var s=this.state.piece;
-      for(var r=0;r<s.length;r++)for(var c=0;c<s[r].length;c++){
-        if(!s[r][c])continue;
-        var cx=(this.state.px+c)*b,cy=(gy+r)*b;
-        if(cy>=0){ctx.fillStyle='rgba(255,255,255,0.12)';ctx.fillRect(cx+1,cy+1,b-2,b-2);ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.strokeRect(cx+1,cy+1,b-2,b-2)}
-      }
-      var clr=this.colors[this.state.pieceIdx];
-      for(var r=0;r<s.length;r++)for(var c=0;c<s[r].length;c++){
-        if(!s[r][c])continue;
-        var cx=(this.state.px+c)*b,cy=(this.state.py+r)*b;
-        if(cy>=0)this.drawBlock(ctx,cx,cy,b,clr);
-      }
-    }
-  },
-
-  drawPreview:function(){
-    var cv=document.getElementById('tetris-next');
-    if(!cv)return;
-    var ctx=cv.getContext('2d'),b=this.PB,s=this.pieces[this.state.nextIdx].shape,w=s[0].length*b,h=s.length*b;
-    cv.width=w;cv.height=h;
-    ctx.fillStyle='#111122';
-    ctx.fillRect(0,0,w,h);
-    var clr=this.colors[this.state.nextIdx];
-    for(var r=0;r<s.length;r++)for(var c=0;c<s[r].length;c++)if(s[r][c])this.drawBlock(ctx,c*b,r*b,b,clr);
-  },
-
-  loop:function(ts){
-    if(this.state.paused||this.state.gameOver){this.drawBoard();this.rafId=requestAnimationFrame(this.loop.bind(this));return}
-    if(ts-this.lastDrop>=this.dropInterval){if(!this.move(0,1))this.lock();this.lastDrop=ts}
-    this.drawBoard();
-    this.rafId=requestAnimationFrame(this.loop.bind(this));
-  },
-
-  togglePause:function(){
-    this.state.paused=!this.state.paused;
-    this.updatePauseUI();
-  },
-
-  stop:function(){if(this.rafId){cancelAnimationFrame(this.rafId);this.rafId=null}}
-};
-
-function initTetris(){TetrisGame.init()}
-function stopTetris(){TetrisGame.stop()}
-
-document.addEventListener('keydown',function(e){
-  var win=document.getElementById('window-tetris');
-  if(!win||win.style.display==='none'||!win.classList.contains('focused'))return;
-  if(e.key==='p'||e.key==='P'){TetrisGame.togglePause();e.preventDefault();return}
-  if(TetrisGame.state.gameOver||TetrisGame.state.paused)return;
-  switch(e.key){
-    case 'ArrowLeft':TetrisGame.move(-1,0);e.preventDefault();break;
-    case 'ArrowRight':TetrisGame.move(1,0);e.preventDefault();break;
-    case 'ArrowDown':if(TetrisGame.move(0,1))TetrisGame.state.score+=1;TetrisGame.lastDrop=performance.now();e.preventDefault();break;
-    case 'ArrowUp':TetrisGame.tryRotate();e.preventDefault();break;
-    case ' ':TetrisGame.hardDrop();e.preventDefault();break;
-  }
-  TetrisGame.drawBoard();
-});
-</script>
+<script src="icons.js"></script>
+<script src="apps.js"></script>
+<script src="desktop.js"></script>
+<script src="window-manager.js"></script>
+<script src="clock.js"></script>
+<script src="gamify.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
