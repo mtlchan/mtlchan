@@ -152,6 +152,19 @@ var WindowManager = (function() {
         setupBinaryGame(appEl);
       }, 100);
     }
+
+    // Setup Tetris if needed
+    if (id === 'tetris') {
+      setTimeout(function() {
+        var appEl = win.querySelector('[id^="tetris-app-"]');
+        if (!appEl) return;
+        win.querySelector('.window-body').style.overflow = 'hidden';
+        win.style.width = '430px';
+        win.style.height = '640px';
+        windows[id].size = { width: 430, height: 640 };
+        TetrisGame.setup(appEl);
+      }, 100);
+    }
   }
 
   function openCustom(id, title, content) {
@@ -265,6 +278,7 @@ var WindowManager = (function() {
 
   function closeWindow(id) {
     if (!windows[id]) return;
+    if (id === 'tetris' && typeof TetrisGame !== 'undefined') TetrisGame.stop();
     if (windows[id].el && windows[id].el.parentNode) windows[id].el.remove();
     var tab = document.getElementById('tab-' + id);
     if (tab) tab.remove();
