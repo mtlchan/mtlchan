@@ -9,6 +9,7 @@ var Desktop = (function() {
   var contextSubMenuTimer = null;
 
   var DEFAULT_ICONS = [
+    { id: 'tetris', name: 'Tetris', icon: 'tetris', appId: 'tetris', type: 'app' },
     { id: 'cursors', name: 'Cursors', icon: 'cursor', appId: 'cursors', type: 'app' },
     { id: 'biology-folder', name: 'Biology', icon: 'dna', appId: 'biology-folder', type: 'folder' },
     { id: 'uk-field-trip', name: 'UK Field Trip', icon: 'trowel', appId: 'uk-field-trip', type: 'folder' },

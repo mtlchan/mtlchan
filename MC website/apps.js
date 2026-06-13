@@ -1267,5 +1267,34 @@ const APPS = {
         '@keyframes bg-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}' +
       '</style>';
     }
+  },
+
+  tetris: {
+    title: 'Tetris',
+    icon: 'tetris',
+    content: function() {
+      var uid = 'ta' + Math.random().toString(36).substr(2,6);
+      return '<div id="tetris-app-' + uid + '" style="display:flex;gap:12px;justify-content:center;align-items:flex-start;position:relative;height:100%;padding-top:4px">' +
+        '<canvas id="tetris-board-' + uid + '" style="border:1px solid #1e2a3a;border-radius:2px"></canvas>' +
+        '<div style="min-width:80px;text-align:center">' +
+          '<div style="color:#888;font-size:10px;text-transform:uppercase;margin-bottom:2px">NEXT</div>' +
+          '<canvas id="tetris-next-' + uid + '" style="margin-bottom:10px"></canvas>' +
+          '<div style="color:#888;font-size:10px;text-transform:uppercase;margin-bottom:2px">SCORE</div>' +
+          '<div id="tetris-score-' + uid + '" style="color:#00f0ff;font-size:18px;font-weight:600;margin-bottom:8px">0</div>' +
+          '<div style="color:#888;font-size:10px;text-transform:uppercase;margin-bottom:2px">LINES</div>' +
+          '<div id="tetris-lines-' + uid + '" style="color:#ffd700;font-size:16px;margin-bottom:8px">0</div>' +
+          '<div style="color:#888;font-size:10px;text-transform:uppercase;margin-bottom:2px">LEVEL</div>' +
+          '<div id="tetris-level-' + uid + '" style="color:#66bb6a;font-size:16px">1</div>' +
+        '</div>' +
+        '<div id="tetris-overlay-' + uid + '" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.88);align-items:center;justify-content:center;z-index:10;flex-direction:column;border-radius:4px">' +
+          '<div id="tetris-msg-' + uid + '" style="color:#fff;font-size:22px;font-weight:700;margin-bottom:12px">GAME OVER</div>' +
+          '<div id="tetris-final-' + uid + '" style="color:#00f0ff;font-size:14px;margin-bottom:16px"></div>' +
+          '<button id="tetris-restart-' + uid + '" style="padding:8px 20px;background:#00f0ff;color:#000;border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer">Play Again</button>' +
+          '<div id="tetris-hint-' + uid + '" style="color:#888;font-size:11px;margin-top:12px"></div>' +
+        '</div>' +
+        '<div style="position:absolute;bottom:6px;left:0;right:0;text-align:center;color:#555;font-size:10px">Arrow Keys Move | Up Rotate | Space Hard Drop | P Pause</div>' +
+      '</div>';
+    }
   }
+
 };
