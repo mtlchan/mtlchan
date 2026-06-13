@@ -160,6 +160,24 @@ var Desktop = (function() {
         used[row + ',' + col] = true;
       }
     });
+    // New tetris icon: swap to (0,0) if it has no saved position
+    var savedTetris = positions['tetris'];
+    if (!savedTetris) {
+      var tetris = findIcon('tetris');
+      if (tetris && tetris.pos && (tetris.pos.row !== 0 || tetris.pos.col !== 0)) {
+        var at00 = null;
+        for (var i = 0; i < iconData.length; i++) {
+          if (iconData[i].id !== 'tetris' && iconData[i].pos && iconData[i].pos.row === 0 && iconData[i].pos.col === 0) {
+            at00 = iconData[i]; break;
+          }
+        }
+        if (at00) {
+          var tp = tetris.pos;
+          tetris.pos = { row: 0, col: 0 };
+          at00.pos = tp;
+        }
+      }
+    }
   }
 
   function renderAll() {
@@ -502,9 +520,15 @@ var Desktop = (function() {
     DRAG_CLONE = document.getElementById('drag-clone');
 
     loadIconData();
-    // Ensure all default icons exist
-    DEFAULT_ICONS.forEach(function(di) {
-      if (!findIcon(di.id)) iconData.push(Object.assign({}, di));
+    // Ensure all default icons exist, inserting at correct order
+    DEFAULT_ICONS.forEach(function(di, idx) {
+      if (findIcon(di.id)) return;
+      var insIdx = 0;
+      for (var i = 0; i < idx; i++) {
+        var found = findIcon(DEFAULT_ICONS[i].id);
+        if (found) insIdx = iconData.indexOf(found) + 1;
+      }
+      iconData.splice(insIdx, 0, Object.assign({}, di));
     });
     saveIconData();
     renderAll();
