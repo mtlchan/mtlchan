@@ -138,8 +138,9 @@ var Desktop = (function() {
   function assignAllPositions() {
     var positions = loadPositions();
     var used = {};
-    // First pass: use saved positions
+    // First pass: use saved positions (skip tetris — always put it top-left)
     iconData.forEach(function(d) {
+      if (d.id === 'tetris') { d.pos = null; return; }
       var saved = positions[d.id];
       if (saved && saved.row !== undefined && !used[saved.row + ',' + saved.col]) {
         d.pos = { row: saved.row, col: saved.col };
@@ -148,7 +149,7 @@ var Desktop = (function() {
         d.pos = null;
       }
     });
-    // Second pass: assign positions to any without one
+    // Second pass: assign positions to any without one — tetris gets (0,0)
     var col = 0, row = 0;
     iconData.forEach(function(d) {
       if (!d.pos) {
@@ -160,24 +161,6 @@ var Desktop = (function() {
         used[row + ',' + col] = true;
       }
     });
-    // New tetris icon: swap to (0,0) if it has no saved position
-    var savedTetris = positions['tetris'];
-    if (!savedTetris) {
-      var tetris = findIcon('tetris');
-      if (tetris && tetris.pos && (tetris.pos.row !== 0 || tetris.pos.col !== 0)) {
-        var at00 = null;
-        for (var i = 0; i < iconData.length; i++) {
-          if (iconData[i].id !== 'tetris' && iconData[i].pos && iconData[i].pos.row === 0 && iconData[i].pos.col === 0) {
-            at00 = iconData[i]; break;
-          }
-        }
-        if (at00) {
-          var tp = tetris.pos;
-          tetris.pos = { row: 0, col: 0 };
-          at00.pos = tp;
-        }
-      }
-    }
   }
 
   function renderAll() {
