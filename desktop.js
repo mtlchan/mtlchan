@@ -10,7 +10,6 @@ var Desktop = (function() {
 
   var DEFAULT_ICONS = [
     { id: 'tetris', name: 'Tetris', icon: 'tetris', appId: 'tetris', type: 'app' },
-    { id: 'cursors', name: 'Cursors', icon: 'cursor', appId: 'cursors', type: 'app' },
     { id: 'biology-folder', name: 'Biology', icon: 'dna', appId: 'biology-folder', type: 'folder' },
     { id: 'uk-field-trip', name: 'UK Field Trip', icon: 'trowel', appId: 'uk-field-trip', type: 'folder' },
     { id: 'chemistry-folder', name: 'Chemistry', icon: 'flask', appId: 'chemistry-folder', type: 'folder' },
@@ -503,6 +502,8 @@ var Desktop = (function() {
     DRAG_CLONE = document.getElementById('drag-clone');
 
     loadIconData();
+    // Remove cursors icon if present and not in defaults
+    iconData = iconData.filter(function(d) { return d.id !== 'cursors'; });
     // Ensure all default icons exist, inserting at correct order
     DEFAULT_ICONS.forEach(function(di, idx) {
       if (findIcon(di.id)) return;
